@@ -37,16 +37,31 @@ def personnel_detail_view(request, pk ):
   return render(request, 'computerApp/personnel_detail.html', context)
 
 def machine_add_form(request):
-  if request.method == 'POST':
-    form = AddMachineForm(request.POST or None)
-    if form.is_valid():
-      new_machine = Machine(nom=form.cleaned_data['nom'])
-      new_machine.save()
-      return redirect ('machines')
-  else:
-    form = AddMachineForm()
-    context = {'form' : form}
-    return render(request, 'computerApp/machine_add.html',context)
+    if request.method == 'POST':
+        form = AddMachineForm(request.POST or None)
+        if form.is_valid():
+            new_machine = Machine(
+                nom=form.cleaned_data['nom'],
+                mach=form.cleaned_data['mach'])
+            new_machine.save()
+            return redirect('machines')
+    else:
+        form = AddMachineForm()
+    context = {'form': form}
+    return render(request, 'computerApp/machine_add.html', context)
+
+# def machine_add_form(request):
+#   if request.method == 'POST':
+#     form = AddMachineForm(request.POST or None)
+#     if form.is_valid():
+#       new_machine = Machine(nom=form.cleaned_data['nom'])
+#       # TYPE=form.cleaned_data['TYPE'])
+#       new_machine.save()
+#       return redirect ('machines')
+#   else:
+#     form = AddMachineForm()
+#     context = {'form' : form}
+#     return render(request, 'computerApp/machine_add.html',context)
 
 def personnel_add_form(request):
   if request.method == 'POST':
