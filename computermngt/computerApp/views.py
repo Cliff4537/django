@@ -67,8 +67,13 @@ def personnel_add_form(request):
   if request.method == 'POST':
     form = AddPersonnelForm(request.POST or None)
     if form.is_valid():
-      new_personnel = Personnel(nom=form.cleaned_data['nom'],
-                        secu=form.cleaned_data['secu'])
+      new_personnel = Personnel(
+      nom=form.cleaned_data['nom'],
+      genre=form.cleaned_data['genre'],
+      secu=form.cleaned_data['secu'],
+      prenom=form.cleaned_data['prenom'],
+      site=form.cleaned_data['genre'],
+      )
       new_personnel.save()
       return redirect ('personnels')
   else:

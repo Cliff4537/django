@@ -38,6 +38,21 @@ class Personnel(models.Model):
         prenom = models.CharField(
             max_length=50
         )
+        GENRE = (
+                ('Homme', ('Homme')),
+                ('Femme', ('Femme')),
+                ('Autre', ('Autre'))
+        )
+        SITE = (
+                ('Tours', ('Tours')),
+                ('Paris',('Paris'))
+        )
+        prenom = models.CharField(
+                max_length=50
+        )
+ 
+        genre = models.CharField(max_length=32, choices=GENRE,default='Autre')
+        site = models.CharField(max_length=10, choices=SITE,default='Paris')
 
 def __str__ (self):
         return self.N_secu + " -> " + self.nom + self.prenom
