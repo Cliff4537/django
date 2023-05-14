@@ -43,7 +43,11 @@ def machine_add_form(request):
             new_machine = Machine(
                 nom=form.cleaned_data['nom'],
                 mach=form.cleaned_data['mach'],
-                address_ip=form.cleaned_data['address_ip'])
+                address_ip=form.cleaned_data['address_ip'],
+                personnel=form.cleaned_data['personnel'],
+                site=form.cleaned_data['site'],
+                administrateur=form.cleaned_data['administrateur']
+                )
             new_machine.save()
             return redirect('machines')
     else:
@@ -72,7 +76,7 @@ def personnel_add_form(request):
       nom=form.cleaned_data['nom'],
       genre=form.cleaned_data['genre'],
       prenom=form.cleaned_data['prenom'],
-      site=form.cleaned_data['genre'],
+      site=form.cleaned_data['site'],
       machine = form.cleaned_data['machine'],
       role = form.cleaned_data['role'],
       email = form.cleaned_data['email'],

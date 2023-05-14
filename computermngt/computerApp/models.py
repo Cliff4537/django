@@ -1,6 +1,8 @@
 from django.db import models
 from django.core.validators import RegexValidator, validate_ipv4_address
 from datetime import datetime
+from django.db.models import Q
+
 
 class Machine(models.Model):
         TYPE = (
@@ -14,8 +16,7 @@ class Machine(models.Model):
                 primary_key=True,
                 editable=False)
         nom= models.CharField(
-            max_length =6
-    )
+            max_length =30 )
         maintenanceDate = models.DateField(default = datetime.now())
         mach = models.CharField(max_length=32, choices=TYPE, default='PC')
         address_ip = models.GenericIPAddressField(protocol='IPv4',
@@ -24,12 +25,22 @@ class Machine(models.Model):
             message='The IP address "0.0.0.0" can only be used as the default value',
         ), validate_ipv4_address],
         unique=True,
-        default='0.0.0.0',
-    )
+        default='0.0.0.0')
+        SITE = (
+                ('Tours', ('Tours')),
+                ('Paris',('Paris'))
+        )
+        site = models.CharField(max_length=10, choices=SITE,default='Paris')
+        personnel = models.OneToOneField('Personnel', on_delete=models.SET_NULL, null=True, blank=True, related_name='machine_attitre')
+        administrateur = models.ForeignKey('Personnel',on_delete=models.SET_NULL,null=True,
+        blank=True,related_name='administrateur_machines',limit_choices_to=Q(role='Administrateur') & Q(site=models.F('machine__site')))
+        
+        
+    
         
 
         def __str__ (self):
-          return str(self.id) + " -> " + self.nom
+          return str(self.id) + " - " + self.mach + "-" + self.nom
         def get_name(self):
           return str(self.id) + " " + self.nom
 
@@ -46,9 +57,9 @@ class Personnel(models.Model):
             max_length=50
         )
         GENRE = (
-                ('Homme', ('Homme')),
-                ('Femme', ('Femme')),
-                ('Autre', ('Autre'))
+                ('Mr', ('Homme')),
+                ('Mme', ('Femme')),
+                ('', ('Autre'))
         )
         SITE = (
                 ('Tours', ('Tours')),
@@ -66,10 +77,11 @@ class Personnel(models.Model):
         genre = models.CharField(max_length=32, choices=GENRE,default='Autre')
         site = models.CharField(max_length=10, choices=SITE,default='Paris')
         role = models.CharField(max_length=15, choices=ROLE,default='Utilisateur')
-        machine = models.ForeignKey('Machine', null=True, blank=True, on_delete=models.SET_NULL,)
+        machine = models.OneToOneField('Machine', on_delete=models.SET_NULL, null=True, blank=True, related_name='personnel_attitre')
+        
 
         def __str__ (self):
-          return str(self.id) + " -> " + self.nom + self.prenom
+          return str(self.id) + " - " + self.genre + "." + self.nom + " " + self.prenom
 
         def get_name(self):
           return str(self.id) + " " + self.nom
