@@ -32,7 +32,7 @@ def machine_detail_view(request, pk ):
   return render(request, 'computerApp/machine_detail.html', context)
 
 def personnel_detail_view(request, pk ):
-  personnel = get_object_or_404( Personnel , secu = pk)
+  personnel = get_object_or_404( Personnel , id = pk)
   context = { 'personnel': personnel}
   return render(request, 'computerApp/personnel_detail.html', context)
 
@@ -42,7 +42,8 @@ def machine_add_form(request):
         if form.is_valid():
             new_machine = Machine(
                 nom=form.cleaned_data['nom'],
-                mach=form.cleaned_data['mach'])
+                mach=form.cleaned_data['mach'],
+                address_ip=form.cleaned_data['address_ip'])
             new_machine.save()
             return redirect('machines')
     else:
@@ -70,9 +71,12 @@ def personnel_add_form(request):
       new_personnel = Personnel(
       nom=form.cleaned_data['nom'],
       genre=form.cleaned_data['genre'],
-      secu=form.cleaned_data['secu'],
       prenom=form.cleaned_data['prenom'],
       site=form.cleaned_data['genre'],
+      machine = form.cleaned_data['machine'],
+      role = form.cleaned_data['role'],
+      email = form.cleaned_data['email'],
+      telephone = form.cleaned_data['telephone']
       )
       new_personnel.save()
       return redirect ('personnels')

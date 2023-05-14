@@ -3,11 +3,14 @@
 {% block content%}
 <form method="post">
     {% csrf_token %}
-    {{form.secu}}
     {{form.nom}}
     {{form.prenom}}
     {{form.genre}}
     {{form.site}}
+    {{form.machinep}}
+    {{form.role}}
+    {{form.email}}
+    {{form.telephone}}
 <input type="submit" value ="Envoyer">
 </form>
     {% endblock %}
