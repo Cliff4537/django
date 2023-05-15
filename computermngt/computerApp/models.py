@@ -32,8 +32,15 @@ class Machine(models.Model):
         )
         site = models.CharField(max_length=10, choices=SITE,default='Paris')
         personnel = models.OneToOneField('Personnel', on_delete=models.SET_NULL, null=True, blank=True, related_name='machine_attitre')
-        administrateur = models.ForeignKey('Personnel',on_delete=models.SET_NULL,null=True,
-        blank=True,related_name='administrateur_machines',limit_choices_to=Q(role='Administrateur') & Q(site=models.F('machine__site')))
+        administrateur = models.ForeignKey(
+        'Personnel',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='administrateur_machines',
+        limit_choices_to=models.Q(role='Administrateur') & models.Q(site=models.F('site'))
+    )
+
         
         
     
@@ -41,6 +48,7 @@ class Machine(models.Model):
 
         def __str__ (self):
           return str(self.id) + " - " + self.mach + "-" + self.nom
+        
         def get_name(self):
           return str(self.id) + " " + self.nom
 
