@@ -1,6 +1,6 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from .models import Machine,Personnel
+from .models import Machine,Personnel,Infrastructure
 
 class AddMachineForm(forms.Form) :
 
@@ -26,6 +26,14 @@ class AddMachineForm(forms.Form) :
             raise ValidationError(('Erreur de format pour le champ nom'))
         
         return data
+class AddInfrastructureForm(forms.Form) :
+    nom = forms.CharField(required=True, label = "Nom de l'infrastructure")
+
+    def clean_nom(self):
+        data = self.cleaned_data["nom"]
+        if len(data) > 50:
+            raise ValidationError(('Erreur de format pour le champ nom'))
+    
 
     #personnel = forms.ModelChoiceField(queryset=Personnel.objects.all(), label='Personne attribuée')
     # TYPE = forms.CharField(required=True, label = 'Type de machine')

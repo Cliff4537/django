@@ -1,16 +1,18 @@
 from django.shortcuts import render, redirect
-from computerApp.models import Machine,Personnel
+from computerApp.models import Machine,Personnel,Infrastructure
 from django.shortcuts import get_object_or_404
-from .forms import AddMachineForm, AddPersonnelForm
+from .forms import AddMachineForm, AddPersonnelForm, AddInfrastructureForm
 
 
 
 def index(request) :
     machines = Machine.objects.all()
     Personnels = Personnel.objects.all()
+    infrastructures = Infrastructure.objects.all()
     context = {
         'machines' : machines,
-        'personnels': Personnels
+        'personnels': Personnels,
+        'infrastructures' : infrastructures
 
     }
     return render(request, 'index.html',context)
@@ -55,6 +57,30 @@ def machine_add_form(request):
     context = {'form': form}
     return render(request, 'computerApp/machine_add.html', context)
 
+def infrastructure_add_form(request):
+    if request.method == 'POST':
+        form = AddInfrastructureForm(request.POST or None)
+        if form.is_valid():
+            new_infrastructure = Infrastructure(
+                nom=form.cleaned_data['nom'],
+                site=form.cleaned_data['site'],
+                administrateur=form.cleaned_data['administrateur'],
+                machines=form.cleaned_data['machines']
+                )
+            new_infrastructure.save()
+            return redirect('infrastructures')
+    else:
+        form = AddInfrastructureForm()
+    context = {'form': form}
+    return render(request, 'computerApp/infra_add.html', context)
+
+
+
+
+def infrastructure_list_view(request):
+    infrastructure = Infrastructure.objects.all()
+    context = {'infrastructure': infrastructure}
+    return render(request, 'computerApp/infra_list.html', context)
 # def machine_add_form(request):
 #   if request.method == 'POST':
 #     form = AddMachineForm(request.POST or None)
