@@ -1,7 +1,7 @@
 from django.db import models
 from django.core.validators import RegexValidator, validate_ipv4_address
 from django.core.exceptions import ValidationError
-from datetime import datetime
+from datetime import datetime,timedelta
 from django.db.models import Q
 
 class Machine(models.Model):
@@ -14,7 +14,7 @@ class Machine(models.Model):
 
     id = models.AutoField(primary_key=True, editable=False)
     nom = models.CharField(max_length=30)
-    maintenanceDate = models.DateField(default=datetime.now())
+    creation_date = models.DateField(default=datetime.now())
     mach = models.CharField(max_length=32, choices=TYPE, default='PC')
     address_ip = models.GenericIPAddressField(
         protocol='IPv4',
@@ -49,6 +49,17 @@ class Machine(models.Model):
 
     def get_name(self):
         return f"{self.id} {self.nom}"
+    def calculate_maintenance_date(self):
+        if self.mach == 'PC' or self.mach == 'Mac':
+            maintenance_duration = timedelta(days=7)
+        elif self.mach == 'Serveur':
+            maintenance_duration = timedelta(days=14)
+        elif self.mach == 'Switch':
+            maintenance_duration = timedelta(days=30)
+        else:
+            maintenance_duration = timedelta(days=0)
+        
+        return self.creation_date + maintenance_duration
 
 
 class Personnel(models.Model):

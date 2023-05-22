@@ -1,24 +1,22 @@
 from django import forms
 from django.core.exceptions import ValidationError
 from .models import Machine,Personnel,Infrastructure
+from datetime import datetime
+from django.forms.widgets import DateInput
+
 
 class AddMachineForm(forms.Form) :
 
-    nom = forms.CharField(required=True, label = 'Nom de la machine')
+    nom = forms.CharField(required=True, label = 'Nom de la machine', widget=forms.TextInput(attrs={'class':'form-control'}))
     mach = forms.ChoiceField(choices=Machine.TYPE, label='Type de machine')
-    address_ip = forms.CharField(required=True, label = 'Addresse Ip de la machine')
+    address_ip = forms.CharField(required=True, label = 'Addresse Ip de la machine', widget=forms.TextInput(attrs={'class':'form-control'}))
     personnel = forms.ModelChoiceField(queryset=Personnel.objects.all(), label='Personnel attribuée')
-    
-    
+    creation_date = forms.DateField(widget=DateInput(attrs={'type': 'date','class':'form-control'}), label='Date de la prochaine maintenance')
+    site = forms.ChoiceField(choices=Personnel.SITE, label='Site')
+    dministrateur = forms.ModelChoiceField(queryset=Personnel.objects.filter(role='Administrateur'), label='Personnel attribuée')
+                
 
-    # Vérifie si le personnel est déjà affecté à une machine
-    # def clean_personnel(self):
-    #     personnel = self.cleaned_data.get('personnel')
-    #     if personnel:
-            
-    #         if personnel.machine:
-    #             raise ValidationError('Cet utilisateur est déjà affecté à une machine')
-    #     return personnel
+   
 
     def clean_nom(self):
         data = self.cleaned_data["nom"]
@@ -34,16 +32,6 @@ class AddInfrastructureForm(forms.Form) :
         if len(data) > 50:
             raise ValidationError(('Erreur de format pour le champ nom'))
     
-
-    #personnel = forms.ModelChoiceField(queryset=Personnel.objects.all(), label='Personne attribuée')
-    # TYPE = forms.CharField(required=True, label = 'Type de machine')
-
-    # def clean_TYPE(self):
-    #     data = self.cleaned_data["TYPE"]
-    #     if len(data) != 6:
-    #         raise ValidationError(('Erreur de format pour le champ nom'))
-        
-    #     return data
 
 
 

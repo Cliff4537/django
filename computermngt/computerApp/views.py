@@ -19,8 +19,12 @@ def index(request) :
 
 def machine_list_view(request) :
   machines = Machine.objects.all()
-  context = {'machines':  machines}
+  maintenance_date = machines.calculate_maintenance_date()
+  context = {'machines':  machines,
+  'maintenance_date': maintenance_date}
   return render(request, 'computerApp/machine_list.html',context)
+
+  
 
 def personnel_list_view(request) :
   Personnels= Personnel.objects.all()
@@ -48,7 +52,8 @@ def machine_add_form(request):
                 address_ip=form.cleaned_data['address_ip'],
                 personnel=form.cleaned_data['personnel'],
                 site=form.cleaned_data['site'],
-                administrateur=form.cleaned_data['administrateur']
+                administrateur=form.cleaned_data['administrateur'],
+                creation_date=form.cleaned_data['creation_date']
                 )
             new_machine.save()
             return redirect('machines')
@@ -56,6 +61,17 @@ def machine_add_form(request):
         form = AddMachineForm()
     context = {'form': form}
     return render(request, 'computerApp/machine_add.html', context)
+
+# def get_admin(request):
+#     if request.method == 'POST':
+#         personnels = Personnel.objects.filter(role='Administrateur')
+#         admins = []
+#         for personnel in personnels:
+#             admins.append(personnel)
+#     context = {'admins': admins}
+#     return render(request, 'computerApp/machine_add.html', context)
+
+
 
 def infrastructure_add_form(request):
     if request.method == 'POST':
@@ -65,7 +81,7 @@ def infrastructure_add_form(request):
                 nom=form.cleaned_data['nom'],
                 site=form.cleaned_data['site'],
                 administrateur=form.cleaned_data['administrateur'],
-                machines=form.cleaned_data['machines']
+                
                 )
             new_infrastructure.save()
             return redirect('infrastructures')
@@ -106,7 +122,8 @@ def personnel_add_form(request):
       machine = form.cleaned_data['machine'],
       role = form.cleaned_data['role'],
       email = form.cleaned_data['email'],
-      telephone = form.cleaned_data['telephone']
+      telephone = form.cleaned_data['telephone'],
+      
       )
       new_personnel.save()
       return redirect ('personnels')

@@ -6,8 +6,8 @@
   <ul>
     {% for personnel in personnels %}
         <li>
-          <a href="{% url 'personnel-detail' personnel.secu %}">
-         {{ personnel.secu }} - ({{ personnel.nom }})
+          <a href="{% url 'personnel-detail' personnel.id %}">
+         {{ personnel.id }} - ({{ personnel.nom }})
         </li>
     {% endfor %}
     </ul>
