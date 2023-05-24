@@ -9,11 +9,11 @@ class AddMachineForm(forms.Form) :
 
     nom = forms.CharField(required=True, label = 'Nom de la machine', widget=forms.TextInput(attrs={'class':'form-control'}))
     mach = forms.ChoiceField(choices=Machine.TYPE, label='Type de machine')
-    address_ip = forms.CharField(required=True, label = 'Addresse Ip de la machine', widget=forms.TextInput(attrs={'class':'form-control'}))
+    address_ip = forms.CharField(required=True, label = 'Addresse IP de la machine', widget=forms.TextInput(attrs={'class':'form-control'}))
     personnel = forms.ModelChoiceField(queryset=Personnel.objects.all(), label='Personnel attribuée')
     creation_date = forms.DateField(widget=DateInput(attrs={'type': 'date','class':'form-control'}), label='Date de la prochaine maintenance')
     site = forms.ChoiceField(choices=Personnel.SITE, label='Site')
-    dministrateur = forms.ModelChoiceField(queryset=Personnel.objects.filter(role='Administrateur'), label='Personnel attribuée')
+    administrateur = forms.ModelChoiceField(queryset=Personnel.objects.filter(role='Administrateur'), label='Administrateur local')
                 
 
    
