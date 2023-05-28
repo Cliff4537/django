@@ -11,17 +11,28 @@
         <div class="card-body">
           <form method="post">
             {% csrf_token %}
+            {% if form.errors %}
+            <div class="alert alert-danger" role="alert">
+              <ul>
+                {% for field in form %}
+                {% for error in field.errors %}
+                <li>{{ error }}</li>
+                {% endfor %}
+                {% endfor %}
+              </ul>
+            </div>
+            {% endif %}
             <div class="row mb-3">
               <div class="col-md-6">
                 <div class="form-group">
                   <label for="{{ form.nom.id_for_label }}">Nom:</label>
-                  {{ form.nom }}
+                  <input type="text" name="{{ form.nom.name }}" id="{{ form.nom.id_for_label }}" value="{{ form.nom.value }}" class="form-control">
                 </div>
               </div>
               <div class="col-md-6">
                 <div class="form-group">
                   <label for="{{ form.prenom.id_for_label }}">Prénom:</label>
-                  {{ form.prenom }}
+                  <input type="text" name="{{ form.prenom.name }}" id="{{ form.prenom.id_for_label }}" value="{{ form.prenom.value }}" class="form-control">
                 </div>
               </div>
             </div>
@@ -57,13 +68,13 @@
               <div class="col-md-6">
                 <div class="form-group">
                   <label for="{{ form.email.id_for_label }}">Email:</label>
-                  {{ form.email }}
+                  <input type="email" name="{{ form.email.name }}" id="{{ form.email.id_for_label }}" value="{{ form.email.value }}" class="form-control">
                 </div>
               </div>
               <div class="col-md-6">
                 <div class="form-group">
                   <label for="{{ form.telephone.id_for_label }}">Numéro de téléphone:</label>
-                  {{ form.telephone }}
+                  <input type="text" name="{{ form.telephone.name }}" id="{{ form.telephone.id_for_label }}" value="{{ form.telephone.value }}" class="form-control">
                 </div>
               </div>
             </div>

@@ -20,8 +20,7 @@ class Machine(models.Model):
         protocol='IPv4',
         validators=[
             RegexValidator(
-                regex=r'^(?!0\.0\.0\.0$)',
-                message='The IP address "0.0.0.0" can only be used as the default value',
+                regex=r'^(?!0\.0\.0\.0$)'  
             ),
             validate_ipv4_address
         ],
@@ -49,17 +48,17 @@ class Machine(models.Model):
 
     def get_name(self):
         return f"{self.id} {self.nom}"
-    def calculate_maintenance_date(self):
-        if self.mach == 'PC' or self.mach == 'Mac':
-            maintenance_duration = timedelta(days=7)
-        elif self.mach == 'Serveur':
-            maintenance_duration = timedelta(days=14)
-        elif self.mach == 'Switch':
-            maintenance_duration = timedelta(days=30)
-        else:
-            maintenance_duration = timedelta(days=0)
+    # def calculate_maintenance_date(self):
+    #     if self.mach == 'PC' or self.mach == 'Mac':
+    #         maintenance_duration = timedelta(days=7)
+    #     elif self.mach == 'Serveur':
+    #         maintenance_duration = timedelta(days=14)
+    #     elif self.mach == 'Switch':
+    #         maintenance_duration = timedelta(days=30)
+    #     else:
+    #         maintenance_duration = timedelta(days=0)
         
-        return self.creation_date + maintenance_duration
+    #     return self.creation_date + maintenance_duration
 
 
 class Personnel(models.Model):
@@ -69,7 +68,7 @@ class Personnel(models.Model):
     GENRE = (
         ('Mr', 'Homme'),
         ('Mme', 'Femme'),
-        ('', 'Autre')
+
     )
     SITE = (
         ('Tours', 'Tours'),
@@ -81,10 +80,10 @@ class Personnel(models.Model):
     )
     telephone = models.CharField(max_length=10, default='None')
     email = models.EmailField(blank=True, default='None')
-    genre = models.CharField(max_length=32, choices=GENRE, default='Autre')
+    genre = models.CharField(max_length=32, choices=GENRE, default='Homme')
     site = models.CharField(max_length=15, choices=SITE, default='Paris')
     role = models.CharField(max_length=15, choices=ROLE, default='Utilisateur')
-    machine = models.OneToOneField('Machine', on_delete=models.SET_NULL, null=True, blank=True,
+    machine = models.OneToOneField('Machine', on_delete=models.SET_NULL, null=True, blank=True,default='None',
                                    related_name='personnel_attitre')
 
     def __str__(self):

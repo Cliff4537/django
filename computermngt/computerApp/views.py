@@ -19,10 +19,12 @@ def index(request) :
 
 def machine_list_view(request) :
   machines = Machine.objects.all()
-  maintenance_date = machines.calculate_maintenance_date()
-  context = {'machines':  machines,
-  'maintenance_date': maintenance_date}
+  context = {'machines':  machines,}
+  
   return render(request, 'computerApp/machine_list.html',context)
+
+  # maintenance_date = machines.calculate_maintenance_date()
+  # 'maintenance_date': maintenance_date} (dans context)
 
   
 
@@ -111,26 +113,27 @@ def infrastructure_list_view(request):
 #     return render(request, 'computerApp/machine_add.html',context)
 
 def personnel_add_form(request):
-  if request.method == 'POST':
-    form = AddPersonnelForm(request.POST or None)
-    if form.is_valid():
-      new_personnel = Personnel(
-      nom=form.cleaned_data['nom'],
-      genre=form.cleaned_data['genre'],
-      prenom=form.cleaned_data['prenom'],
-      site=form.cleaned_data['site'],
-      machine = form.cleaned_data['machine'],
-      role = form.cleaned_data['role'],
-      email = form.cleaned_data['email'],
-      telephone = form.cleaned_data['telephone'],
-      
-      )
-      new_personnel.save()
-      return redirect ('personnels')
-  else:
-    form = AddPersonnelForm()
-    context = {'form' : form}
-    return render(request, 'computerApp/personnel_add.html',context)
+    if request.method == 'POST':
+        form = AddPersonnelForm(request.POST)
+        if form.is_valid():
+            # Traitement des données valides
+            new_personnel = Personnel(
+                nom=form.cleaned_data['nom'],
+                genre=form.cleaned_data['genre'],
+                prenom=form.cleaned_data['prenom'],
+                site=form.cleaned_data['site'],
+                machine=form.cleaned_data['machine'],
+                role=form.cleaned_data['role'],
+                email=form.cleaned_data['email'],
+                telephone=form.cleaned_data['telephone'],
+            )
+            new_personnel.save()
+            return redirect('personnels')
+    else:
+        form = AddPersonnelForm()
+    
+    context = {'form': form}
+    return render(request, 'computerApp/personnel_add.html', context)
 
 # Create your views here.
 # Ajout de la ligne de recuperation des machine
