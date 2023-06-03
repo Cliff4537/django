@@ -1,5 +1,5 @@
 from django.db import models
-from django.core.validators import RegexValidator, validate_ipv4_address
+from django.core.validators import RegexValidator, validate_ipv4_address, MaxValueValidator
 from django.core.exceptions import ValidationError
 from datetime import datetime,timedelta
 from django.db.models import Q
@@ -44,21 +44,12 @@ class Machine(models.Model):
     )
 
     def __str__(self):
-        return f"{self.id} - {self.mach} - {self.nom}"
+        return f"{self.site} - {self.mach} - {self.nom}"
 
     def get_name(self):
         return f"{self.id} {self.nom}"
-    # def calculate_maintenance_date(self):
-    #     if self.mach == 'PC' or self.mach == 'Mac':
-    #         maintenance_duration = timedelta(days=7)
-    #     elif self.mach == 'Serveur':
-    #         maintenance_duration = timedelta(days=14)
-    #     elif self.mach == 'Switch':
-    #         maintenance_duration = timedelta(days=30)
-    #     else:
-    #         maintenance_duration = timedelta(days=0)
-        
-    #     return self.creation_date + maintenance_duration
+    
+    
 
 
 class Personnel(models.Model):
@@ -78,7 +69,11 @@ class Personnel(models.Model):
         ('Utilisateur', 'Utilisateur'),
         ('Administrateur', 'Administrateur')
     )
-    telephone = models.CharField(max_length=10, default='None')
+    telephone = models.CharField(
+        max_length=10,
+        validators=[MaxValueValidator(10)],
+        default='None'
+    )
     email = models.EmailField(blank=True, default='None')
     genre = models.CharField(max_length=32, choices=GENRE, default='Homme')
     site = models.CharField(max_length=15, choices=SITE, default='Paris')
@@ -93,13 +88,14 @@ class Personnel(models.Model):
         return f"{self.id} {self.nom}"
 
 
+
 class Infrastructure(models.Model):
-    id = models.AutoField(primary_key=True)
     nom = models.CharField(max_length=50)
     SITE = (
         ('Tours', 'Tours'),
         ('Paris', 'Paris')
     )
+    site = models.CharField(max_length=15, choices=SITE, default='Paris')
 
     administrateur = models.ForeignKey(
         'Personnel',
@@ -109,22 +105,22 @@ class Infrastructure(models.Model):
         related_name='administrateur_infrastructure',
         limit_choices_to=Q(role='Administrateur') & Q(site=models.F('site'))
     )
-    machines = models.ManyToManyField('Machine', related_name='infrastructures', blank=True)
-    site = models.CharField(max_length=15, choices=SITE, default='Paris')
+    machines = models.ManyToManyField(
+        'Machine',
+        related_name='infrastructures',
+        blank=True,
+        limit_choices_to=Q(site=models.F('site'))
+    )
 
     def __str__(self):
-        return f"{self.nom}"
-
-    def get_name(self):
-        return f"{self.nom}"
+        return self.nom
 
     def clean(self):
-        if self.administrateur and Infrastructure.objects.filter(administrateur__site=self.site).exists():
-            raise ValidationError("L'Administrateur est déjà responsable d'un site")
-
-        if self.machines.filter(site=self.site).exists():
-            raise ValidationError("Une machine ne peut être associée qu'à un seul site.")
+        super().clean()
+        if self.administrateur and self.administrateur.administrateur_infrastructure.exists():
+            raise ValidationError("Un administrateur ne peut être associé qu'à une seule infrastructure.")
 
     def save(self, *args, **kwargs):
         self.clean()
         super().save(*args, **kwargs)
+        

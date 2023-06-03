@@ -7,8 +7,10 @@ urlpatterns = [
     path('personnels/',views.personnel_list_view, name='personnels' ),
     path('machines/<pk>',views.machine_detail_view, name = 'machine-detail'), 
     path('personnels/<pk>',views.personnel_detail_view, name = 'personnel-detail'), 
+    path('infrastructures/<pk>',views.infrastructure_detail_view, name = 'infrastructure-detail'),
     path('add-machine', views.machine_add_form, name = 'add-machine'),
     path('add-personnel', views.personnel_add_form, name = 'add-personnel'),
     path('infrastructures/',views.infrastructure_list_view, name='infrastructures'),
-    path('add_infrastructure/', views.infrastructure_add_form, name='add_infrastructure'),
+    path('add_infrastructure/', views.infrastructure_add_form, name='add-infra'),
+    path('machines/delete/<int:machine_id>/', views.delete_machine, name='delete_machine')
 ]

@@ -1,17 +1,32 @@
 {% extends "index.html"%}
 
-{% block content%}
-  <h1> Liste des machines </h1>
-  {% if machines %}
-  <ul>
-    {% for machine in machines %}
-        <li>
-          <a href="{% url 'machine-detail' machine.id %}"> 
-         {{ machine.id }} - ({{ machine.nom }})
-        </li>
-    {% endfor %}
-  </ul>
-    {% else %}
-        <p> Il n\'y a pas de machine.</p>
-        {% endif %}
-    {% endblock %}
+{% block content %}
+<h1> Liste des machines </h1>
+
+<form method="GET" action="">
+  <div class="input-group mb-3">
+    <input type="text" class="form-control" name="search_query" placeholder="Rechercher une machine" aria-label="Rechercher une machine" aria-describedby="search-button" value="{{ search_query }}">
+    <button class="btn btn-primary" type="submit" id="search-button">Rechercher</button>
+  </div>
+</form>
+
+{% for machine in machines %}
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">{{ machine.nom }}</h5>
+      <p class="card-text">Site: {{ machine.site }}</p>
+      <p class="card-text">Type: {{ machine.mach }}</p>
+      <p class="card-text">Date de création: {{ machine.creation_date }}</p>
+    </div>
+    <div class="card-footer text-right">
+      <form method="POST" action="{% url 'delete_machine' machine.id %}" class="d-inline">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette machine ?')">Supprimer</button>
+      </form>
+    </div>
+  </div>
+{% empty %}
+  <p>Aucune machine trouvée.</p>
+{% endfor %}
+
+{% endblock %}

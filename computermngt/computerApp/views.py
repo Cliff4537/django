@@ -17,14 +17,17 @@ def index(request) :
     }
     return render(request, 'index.html',context)
 
-def machine_list_view(request) :
-  machines = Machine.objects.all()
-  context = {'machines':  machines,}
-  
-  return render(request, 'computerApp/machine_list.html',context)
+def machine_list_view(request):
+    search_query = request.GET.get('search_query', '')
 
-  # maintenance_date = machines.calculate_maintenance_date()
-  # 'maintenance_date': maintenance_date} (dans context)
+    machines = Machine.objects.all()
+
+    if search_query:
+        machines = machines.filter(nom__icontains=search_query) | machines.filter(mach__icontains=search_query) | machines.filter(site__icontains=search_query)
+
+    context = {'machines': machines, 'search_query': search_query}
+  
+    return render(request, 'computerApp/machine_list.html', context)
 
   
 
@@ -34,15 +37,31 @@ def personnel_list_view(request) :
   return render(request, 'computerApp/personnel_list.html', context)
 
 
+
 def machine_detail_view(request, pk ):
   machine = get_object_or_404( Machine , id = pk)
   context = { 'machine': machine}
   return render(request, 'computerApp/machine_detail.html', context)
+  
+def delete_machine(request, machine_id):
+    machine = get_object_or_404(Machine, id=machine_id)
+
+    if request.method == 'POST':
+        machine.delete()
+        return redirect('machines')
+
+    return render(request, 'computerApp/delete_machine.html', {'machine': machine})
+
 
 def personnel_detail_view(request, pk ):
   personnel = get_object_or_404( Personnel , id = pk)
   context = { 'personnel': personnel}
   return render(request, 'computerApp/personnel_detail.html', context)
+
+def infrastructure_detail_view(request, pk ):
+  infrastructure = get_object_or_404( Infrastructure , id = pk)
+  context = { 'infrastructure': infrastructure}
+  return render(request, 'computerApp/infra_detail.html', context)
 
 def machine_add_form(request):
     if request.method == 'POST':
@@ -73,31 +92,49 @@ def machine_add_form(request):
 #     context = {'admins': admins}
 #     return render(request, 'computerApp/machine_add.html', context)
 
-
-
 def infrastructure_add_form(request):
     if request.method == 'POST':
-        form = AddInfrastructureForm(request.POST or None)
+        form = AddInfrastructureForm(request.POST)
         if form.is_valid():
+            # Traitement des données valides
+            nom = form.cleaned_data['nom']
+            site = form.cleaned_data['site']
+            machines = form.cleaned_data['machines']
+            administrateur = form.cleaned_data['administrateur']
+
             new_infrastructure = Infrastructure(
-                nom=form.cleaned_data['nom'],
-                site=form.cleaned_data['site'],
-                administrateur=form.cleaned_data['administrateur'],
-                
-                )
+                nom=nom,
+                site=site,
+                administrateur=administrateur
+            )
             new_infrastructure.save()
+
+            # Ajouter les machines sélectionnées à l'infrastructure
+            new_infrastructure.machines.set(machines)
+
             return redirect('infrastructures')
     else:
         form = AddInfrastructureForm()
     context = {'form': form}
     return render(request, 'computerApp/infra_add.html', context)
 
+# def infrastructure_add_form(request):
+#     if request.method == 'POST':
+#         form = AddInfrastructureForm(request.POST)
+#         if form.is_valid():
+#             new_infrastructure = form.save()
+#             return redirect('infrastructures')
+#     else:
+#         form = AddInfrastructureForm()
+#     context = {'form': form}
+#     return render(request, 'computerApp/infra_add.html', context)
+
 
 
 
 def infrastructure_list_view(request):
-    infrastructure = Infrastructure.objects.all()
-    context = {'infrastructure': infrastructure}
+    infrastructures = Infrastructure.objects.all()
+    context = {'infrastructures': infrastructures}
     return render(request, 'computerApp/infra_list.html', context)
 # def machine_add_form(request):
 #   if request.method == 'POST':

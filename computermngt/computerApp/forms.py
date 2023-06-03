@@ -3,15 +3,16 @@ from django.core.exceptions import ValidationError
 from .models import Machine,Personnel,Infrastructure
 from datetime import datetime
 from django.forms.widgets import DateInput
+from django.forms import CheckboxSelectMultiple
 
 
 class AddMachineForm(forms.Form):
-    nom = forms.CharField(required=True, label='Nom de la machine', widget=forms.TextInput(attrs={'class':'form-control'}))
-    mach = forms.ChoiceField(choices=Machine.TYPE, label='Type de machine')
-    address_ip = forms.CharField(required=True, label='Adresse IP de la machine', widget=forms.TextInput(attrs={'class':'form-control'}))
+    nom = forms.CharField(required=True, label='(*)Nom de la machine', widget=forms.TextInput(attrs={'class':'form-control'}))
+    mach = forms.ChoiceField(choices=Machine.TYPE, label='(*)Type de machine')
+    address_ip = forms.CharField(required=True, label='(*)Adresse IP de la machine', widget=forms.TextInput(attrs={'class':'form-control'}))
     personnel = forms.ModelChoiceField(queryset=Personnel.objects.all(), label='Personnel attribué', required=False)
     creation_date = forms.DateField(widget=DateInput(attrs={'type': 'date', 'class':'form-control'}), label='Date de la prochaine maintenance')
-    site = forms.ChoiceField(choices=Personnel.SITE, label='Site')
+    site = forms.ChoiceField(choices=Personnel.SITE, label='(*)Site')
     administrateur = forms.ModelChoiceField(queryset=Personnel.objects.filter(role='Administrateur'), label='Administrateur local',required=False)
 
     def clean_nom(self):
@@ -34,19 +35,45 @@ class AddMachineForm(forms.Form):
         if nom and mach:
             existing_machine = Machine.objects.filter(nom=nom, mach=mach).exists()
             if existing_machine:
-                self.add_error('nom', 'Une machine du même nom et type existe déjà')
+                self.add_error('nom', 'Une machine de même nom et type similaire existe déjà')
 
         return cleaned_data
+    def clean_administrateur(self):
+        administrateur = self.cleaned_data.get('administrateur')
+        site = self.cleaned_data.get('site')
+
+        if administrateur and administrateur.role != 'Administrateur':
+            raise forms.ValidationError("L'administrateur doit avoir le rôle 'Administrateur'.")
+
+        if administrateur and administrateur.site != site:
+            raise forms.ValidationError("L'administrateur doit appartenir au même site.")
+
+        return administrateur
 
     
-class AddInfrastructureForm(forms.Form) :
-    nom = forms.CharField(required=True, label = "Nom de l'infrastructure")
+class AddInfrastructureForm(forms.ModelForm):
+    machines = forms.ModelMultipleChoiceField(
+        queryset=Machine.objects.filter(),
+        widget=forms.CheckboxSelectMultiple,  # Utilisation du widget CheckboxSelectMultiple
+        required=True
+    )
 
-    def clean_nom(self):
-        data = self.cleaned_data["nom"]
-        if len(data) > 50:
-            raise ValidationError(('Erreur de format pour le champ nom'))
-    
+    class Meta:
+        model = Infrastructure
+        fields = ['nom', 'site', 'administrateur']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        site = self.initial.get('site') or self.data.get('site')
+        if site:
+            self.fields['machines'].queryset = Machine.objects.filter(site=site)
+
+
+
+
+
+   
+
 
 
 
@@ -58,7 +85,7 @@ class AddPersonnelForm(forms.Form):
     machine = forms.ModelChoiceField(queryset=Machine.objects.all(), required=False, label='Machine attribuée')
     role = forms.ChoiceField(choices=Personnel.ROLE, label='Role')
     email = forms.EmailField(required=True, label='Email du personnel')
-    telephone = forms.CharField(required=True, label='Numéro de téléphone')
+    telephone = forms.CharField(required=False, label='Numéro de téléphone')
 
     def clean_nom(self):
         data = self.cleaned_data["nom"]
@@ -69,13 +96,15 @@ class AddPersonnelForm(forms.Form):
     def clean_telephone(self):
         data = self.cleaned_data["telephone"]
         if len(data) != 10:
-            raise ValidationError(('Erreur de format pour le champ téléphone'))
+            raise ValidationError(('Erreur de format pour le champ téléphone (10 caractères) '))
         return data
 
     def clean_prenom(self):
         data = self.cleaned_data["prenom"]
         if len(data) > 50:
             raise ValidationError(('Erreur de format pour le champ prénom'))
+        if len(data) <= 0:
+            raise ValidationError(('Le champ prénom est obligatoire'))
         return data
 
     def clean_machine(self):

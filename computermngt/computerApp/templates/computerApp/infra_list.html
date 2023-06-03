@@ -1,1 +1,15 @@
-{% extends "index.html"%}
+{% extends "index.html" %}
+{% block content %}
+  <h1>Liste des Infrastructures</h1>
+  {% if infrastructures %}
+    <div class="list-group">
+      {% for infrastructure in infrastructures %}
+        <a href="{% url 'infrastructure-detail' infrastructure.id %}" class="list-group-item">
+          {{ infrastructure.id }} - ({{ infrastructure.nom }})
+        </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p>Il n'y a pas d'Infrastructure.</p>
+  {% endif %}
+{% endblock %}
