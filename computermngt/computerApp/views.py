@@ -18,15 +18,34 @@ def index(request) :
     return render(request, 'index.html',context)
 
 def machine_list_view(request):
-    search_query = request.GET.get('search_query', '')
+    search_query = request.GET.get('search_query')
+    filter_type = request.GET.get('filter_type')
+    filter_date = request.GET.get('filter_date')
+    filter_site = request.GET.get('filter_site')
 
     machines = Machine.objects.all()
 
     if search_query:
-        machines = machines.filter(nom__icontains=search_query) | machines.filter(mach__icontains=search_query) | machines.filter(site__icontains=search_query)
+        machines = machines.filter(nom__icontains=search_query)
 
-    context = {'machines': machines, 'search_query': search_query}
-  
+    if filter_type:
+        machines = machines.filter(mach=filter_type)
+
+    if filter_date == 'recent':
+        machines = machines.order_by('-creation_date')
+    elif filter_date == 'ancient':
+        machines = machines.order_by('creation_date')
+
+    if filter_site:
+        machines = machines.filter(site=filter_site)
+
+    context = {
+        'machines': machines,
+        'search_query': search_query,
+        'filter_type': filter_type,
+        'filter_date': filter_date,
+        'filter_site': filter_site
+    }
     return render(request, 'computerApp/machine_list.html', context)
 
   

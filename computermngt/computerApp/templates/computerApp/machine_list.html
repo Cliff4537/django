@@ -1,32 +1,113 @@
-{% extends "index.html"%}
+{% extends "index.html" %}
 
 {% block content %}
-<h1> Liste des machines </h1>
+<div class="text-center mt-4 mb-3">
+  <h1 style="margin-bottom: 1rem; text-decoration: underline;">Liste des machines</h1>
+</div>
 
-<form method="GET" action="">
-  <div class="input-group mb-3">
-    <input type="text" class="form-control" name="search_query" placeholder="Rechercher une machine" aria-label="Rechercher une machine" aria-describedby="search-button" value="{{ search_query }}">
-    <button class="btn btn-primary" type="submit" id="search-button">Rechercher</button>
+<!-- Barre de recherche et filtres -->
+<div class="row justify-content-start mb-3" style="background-color: #333333; padding: 10px;">
+  <div class="col-md-4">
+    <form method="GET" action="">
+      <div class="input-group">
+        <input type="text" class="form-control form-control-sm me-2" name="search_query" placeholder="Recherche" aria-label="Recherche" aria-describedby="search-button" value="{{ search_query }}" style="max-width: 200px;">
+        <button class="btn btn-primary btn-sm" type="submit" id="search-button">Rechercher</button>
+      </div>
+    </form>
   </div>
-</form>
+  <div class="col-md-8">
+    <form method="GET" action="">
+      <div class="row align-items-center justify-content-end">
+        <div class="col-md-auto">
+          <label class="input-group-text input-group-text-sm me-2 mb-0" for="filter-type">Type</label>
+        </div>
+        <div class="col-md-auto">
+          <select class="form-select form-select-sm me-2" name="filter_type" id="filter-type">
+            <option value="">Tous</option>
+            <option value="PC">PC</option>
+            <option value="Mac">Mac</option>
+            <option value="Serveur">Serveur</option>
+            <option value="Switch">Switch</option>
+          </select>
+        </div>
+        <div class="col-md-auto">
+          <label class="input-group-text input-group-text-sm me-2 mb-0" for="filter-site">Site</label>
+        </div>
+        <div class="col-md-auto">
+          <select class="form-select form-select-sm me-2" name="filter_site" id="filter-site">
+            <option value="">Tous</option>
+            <option value="Tours">Tours</option>
+            <option value="Paris">Paris</option>
+          </select>
+        </div>
+        <div class="col-md-auto">
+          <label class="input-group-text input-group-text-sm me-2 mb-0" for="filter-date">Date</label>
+        </div>
+        <div class="col-md-auto">
+          <select class="form-select form-select-sm me-2" name="filter_date" id="filter-date">
+            <option value="">Tous</option>
+            <option value="recent">Récent</option>
+            <option value="ancient">Ancien</option>
+          </select>
+        </div>
+        <div class="col-md-auto">
+          <button class="btn btn-danger btn-sm me-2" type="submit">Filtrer</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
 
-{% for machine in machines %}
-  <div class="card">
-    <div class="card-body">
-      <h5 class="card-title">{{ machine.nom }}</h5>
-      <p class="card-text">Site: {{ machine.site }}</p>
-      <p class="card-text">Type: {{ machine.mach }}</p>
-      <p class="card-text">Date de création: {{ machine.creation_date }}</p>
-    </div>
-    <div class="card-footer text-right">
-      <form method="POST" action="{% url 'delete_machine' machine.id %}" class="d-inline">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette machine ?')">Supprimer</button>
-      </form>
+<div class="row">
+  {% for machine in machines %}
+  <div class="col-md-4">
+    <div class="card mb-3">
+      <div class="card-body row">
+        <div class="col-md-6">
+          <h5 class="card-title">{{ machine.nom }}</h5>
+          <p class="card-text">Site: {{ machine.site }}</p>
+        </div>
+        <div class="col-md-6">
+          <p class="card-text">Type: {{ machine.mach }}</p>
+          <p class="card-text">Date de création: {{ machine.creation_date }}</p>
+        </div>
+        <div class="col-md-12 d-flex justify-content-end mt-3">
+          <a href="{% url 'machine-detail' machine.id %}" class="btn btn-primary">Détail</a>
+          <button type="button" class="btn btn-danger ms-2" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal{{ machine.id }}">
+            Supprimer
+          </button>
+        </div>
+      </div>
     </div>
   </div>
-{% empty %}
-  <p>Aucune machine trouvée.</p>
-{% endfor %}
 
+  <!-- Confirm Delete Modal -->
+  <div class="modal fade" id="confirmDeleteModal{{ machine.id }}" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel{{ machine.id }}" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="confirmDeleteModalLabel{{ machine.id }}">Supprimer la machine "{{ machine.nom }}"</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>Êtes-vous sûr de vouloir supprimer cette machine ?</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+          <form method="POST" action="{% url 'delete_machine' machine.id %}" class="d-inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Supprimer</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <div class="col-md-12">
+    <p>Aucune machine trouvée.</p>
+  </div>
+  {% endfor %}
+</div>
 {% endblock %}
+
+

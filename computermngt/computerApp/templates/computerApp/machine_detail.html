@@ -2,12 +2,25 @@
 
 {% block content %}
 
-<h1>Nom: {{machine.name}} </h1>
-<p> <strong>Id</strong> :{{machine.id}} </a></p>
-
-<p> <strong>Date maintenance :
-</strong>{{machine.maintenanceDate}} </p>
-<p><strong>Machine :
-</strong> {{machine.mach}} </p>
+<div class="card text-center mx-auto mt-5" style="max-width: 400px; border: 2px solid black; border-radius: 10px;">
+  <div class="card-body">
+    <h1 class="card-title">Nom: {{ machine.nom }}</h1>
+    <hr class="nav-border">
+    <p class="card-text"><strong>Date de maintenance:</strong> {{ machine.creation_date }}</p>
+    <hr class="nav-border">
+    <p class="card-text"><strong>Machine:</strong> {{ machine.mach }}</p>
+    <hr class="nav-border">
+    <p class="card-text"><strong>Adresse IP:</strong> {{ machine.address_ip }}</p>
+    <hr class="nav-border">
+    <p class="card-text"><strong>Site:</strong> {{ machine.site }}</p>
+    <hr class="nav-border">
+    <p class="card-text"><strong>Personnel attitré:</strong> {{ machine.personnel }}</p>
+    <hr class="nav-border">
+    <p class="card-text"><strong>Administrateur:</strong> {{ machine.administrateur }}</p>
+  </div>
+  <div class="card-footer text-end">
+    <a href="{% url 'machines' %}" class="btn btn-danger">Quitter</a>
+  </div>
+</div>
 
 {% endblock %}
