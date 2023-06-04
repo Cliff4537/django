@@ -22,8 +22,10 @@ def machine_list_view(request):
     filter_type = request.GET.get('filter_type')
     filter_date = request.GET.get('filter_date')
     filter_site = request.GET.get('filter_site')
+    
 
     machines = Machine.objects.all()
+
 
     if search_query:
         machines = machines.filter(nom__icontains=search_query)
@@ -50,10 +52,40 @@ def machine_list_view(request):
 
   
 
-def personnel_list_view(request) :
-  Personnels= Personnel.objects.all()
-  context = {'personnels': Personnels}
-  return render(request, 'computerApp/personnel_list.html', context)
+def update_machine(request, machine_id):
+    machine = get_object_or_404(Machine, id=machine_id)
+
+    if request.method == 'POST':
+        
+        return redirect('machine-list')
+    return render(request, 'update_machine.html', {'machine': machine})
+
+
+def personnel_list_view(request):
+    personnels = Personnel.objects.all()
+
+    # Filtrage par genre
+    filter_genre = request.GET.get('filter_genre')
+    if filter_genre:
+        personnels = personnels.filter(genre=filter_genre)
+
+    # Filtrage par site
+    filter_site = request.GET.get('filter_site')
+    if filter_site:
+        personnels = personnels.filter(site=filter_site)
+
+    # Filtrage par rôle
+    filter_role = request.GET.get('filter_role')
+    if filter_role:
+        personnels = personnels.filter(role=filter_role)
+
+    # Recherche
+    search_query = request.GET.get('search_query')
+    if search_query:
+        personnels = personnels.filter(nom__icontains=search_query) | personnels.filter(prenom__icontains=search_query)
+
+    context = {'personnels': personnels, 'search_query': search_query, 'filter_genre': filter_genre, 'filter_site': filter_site, 'filter_role': filter_role}
+    return render(request, 'computerApp/personnel_list.html', context)
 
 
 
@@ -71,16 +103,39 @@ def delete_machine(request, machine_id):
 
     return render(request, 'computerApp/delete_machine.html', {'machine': machine})
 
+def delete_personnel(request, personnel_id):
+    personnel = get_object_or_404(Personnel, id=personnel_id)
+
+    if request.method == 'POST':
+        personnel.delete()
+        return redirect('personnels')
+
+    return render(request, 'computerApp/delete_personnel.html', context = {'personnel': personnel})
+
+def delete_infrastructure(request, infrastructure_id):
+    infrastructure = get_object_or_404(Infrastructure, id=infrastructure_id)
+
+    if request.method == 'POST':
+        infrastructure.delete()
+        return redirect('infrastructures')
+
+    return render(request, 'computerApp/delete_infrastructure.html', context = {'infrastructure': infrastructure})    
+    
+
 
 def personnel_detail_view(request, pk ):
   personnel = get_object_or_404( Personnel , id = pk)
   context = { 'personnel': personnel}
   return render(request, 'computerApp/personnel_detail.html', context)
 
-def infrastructure_detail_view(request, pk ):
-  infrastructure = get_object_or_404( Infrastructure , id = pk)
-  context = { 'infrastructure': infrastructure}
-  return render(request, 'computerApp/infra_detail.html', context)
+def infrastructure_detail_view(request, pk):
+    infrastructure = get_object_or_404(Infrastructure, id = pk)
+    machines = infrastructure.machines.all()  # Récupérer toutes les machines liées à l'infrastructure
+    context = {
+        'infrastructure': infrastructure,
+        'machines': machines,
+    }
+    return render(request, 'computerApp/infra_detail.html', context)
 
 def machine_add_form(request):
     if request.method == 'POST':
@@ -102,14 +157,7 @@ def machine_add_form(request):
     context = {'form': form}
     return render(request, 'computerApp/machine_add.html', context)
 
-# def get_admin(request):
-#     if request.method == 'POST':
-#         personnels = Personnel.objects.filter(role='Administrateur')
-#         admins = []
-#         for personnel in personnels:
-#             admins.append(personnel)
-#     context = {'admins': admins}
-#     return render(request, 'computerApp/machine_add.html', context)
+
 
 def infrastructure_add_form(request):
     if request.method == 'POST':
@@ -137,16 +185,7 @@ def infrastructure_add_form(request):
     context = {'form': form}
     return render(request, 'computerApp/infra_add.html', context)
 
-# def infrastructure_add_form(request):
-#     if request.method == 'POST':
-#         form = AddInfrastructureForm(request.POST)
-#         if form.is_valid():
-#             new_infrastructure = form.save()
-#             return redirect('infrastructures')
-#     else:
-#         form = AddInfrastructureForm()
-#     context = {'form': form}
-#     return render(request, 'computerApp/infra_add.html', context)
+
 
 
 
@@ -155,18 +194,7 @@ def infrastructure_list_view(request):
     infrastructures = Infrastructure.objects.all()
     context = {'infrastructures': infrastructures}
     return render(request, 'computerApp/infra_list.html', context)
-# def machine_add_form(request):
-#   if request.method == 'POST':
-#     form = AddMachineForm(request.POST or None)
-#     if form.is_valid():
-#       new_machine = Machine(nom=form.cleaned_data['nom'])
-#       # TYPE=form.cleaned_data['TYPE'])
-#       new_machine.save()
-#       return redirect ('machines')
-#   else:
-#     form = AddMachineForm()
-#     context = {'form' : form}
-#     return render(request, 'computerApp/machine_add.html',context)
+
 
 def personnel_add_form(request):
     if request.method == 'POST':
@@ -191,14 +219,3 @@ def personnel_add_form(request):
     context = {'form': form}
     return render(request, 'computerApp/personnel_add.html', context)
 
-# Create your views here.
-# Ajout de la ligne de recuperation des machine
-# m a c h i n e s = M a c h i n e . o b j e c t s . a l l ( )
-# il existe d’autres moyens de filtrer
-# au moment de recuperer les donnees
-## Filtrage par numero de machine
-### machines = Machine.objects.filter(id=1)
-## Filtrage par debut de nom
-### machines = Machine.objects.filter(nom_startwith=’10’)
-## Trier les machines selon un champ particulier
-### machines = Machine.objects.order_by(’−id’)

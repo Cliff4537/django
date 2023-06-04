@@ -11,7 +11,7 @@ class AddMachineForm(forms.Form):
     mach = forms.ChoiceField(choices=Machine.TYPE, label='(*)Type de machine')
     address_ip = forms.CharField(required=True, label='(*)Adresse IP de la machine', widget=forms.TextInput(attrs={'class':'form-control'}))
     personnel = forms.ModelChoiceField(queryset=Personnel.objects.all(), label='Personnel attribué', required=False)
-    creation_date = forms.DateField(widget=DateInput(attrs={'type': 'date', 'class':'form-control'}), label='Date de la prochaine maintenance')
+    creation_date = forms.DateField(widget=DateInput(attrs={'type': 'date', 'class':'form-control'}), label='Date de création de la machine')
     site = forms.ChoiceField(choices=Personnel.SITE, label='(*)Site')
     administrateur = forms.ModelChoiceField(queryset=Personnel.objects.filter(role='Administrateur'), label='Administrateur local',required=False)
 
@@ -23,8 +23,18 @@ class AddMachineForm(forms.Form):
 
     def clean_address_ip(self):
         address_ip = self.cleaned_data["address_ip"]
+        octets = address_ip.split(".")
+    
+        if len(octets) != 4:
+            raise ValidationError(('Adresse IP invalide'))
+
+        for octet in octets:
+            if not octet.isdigit() or int(octet) > 255:
+                raise ValidationError(('L\'adresse IP est incorrecte'))
+
         if address_ip != '0.0.0.0' and Machine.objects.filter(address_ip=address_ip).exists():
             raise ValidationError(('Cette adresse IP existe déjà'))
+    
         return address_ip
 
     def clean(self):

@@ -1,0 +1,13 @@
+{% extends "index.html" %}
+
+{% block content %}
+<h1>Supprimer l'utilisateur' "{{personnel.genre}}.{{ personnel.nom }} {{personnel.prenom}}"</h1>
+
+<p>Êtes-vous sûr de vouloir supprimer ce personnel ?</p>
+
+<form method="POST" action="{% url 'delete_personnel' personnel.id %}">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Oui</button>
+    <a href="{% url 'personnels' %}" class="btn btn-primary">Non</a>
+</form>
+{% endblock %}

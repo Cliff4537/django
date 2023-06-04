@@ -61,20 +61,24 @@
 <div class="row">
   {% for machine in machines %}
   <div class="col-md-4">
-    <div class="card mb-3">
+    <div class="card mb-3" style="background-color: #333333; color: #ffffff;">
       <div class="card-body row">
         <div class="col-md-6">
-          <h5 class="card-title">{{ machine.nom }}</h5>
-          <p class="card-text">Site: {{ machine.site }}</p>
+          <h5 class="card-title" style="font-weight: bold; font-family: Arial, sans-serif;">{{ machine.nom }}</h5>
+          <p class="card-text"style="font-weight: bold; font-family: Arial, sans-serif;"><u>Site:</u> {{ machine.site }}</p>
         </div>
         <div class="col-md-6">
-          <p class="card-text">Type: {{ machine.mach }}</p>
-          <p class="card-text">Date de création: {{ machine.creation_date }}</p>
+          <p class="card-text"style="font-weight: bold; font-family: Arial, sans-serif;"><u>Type:</u> {{ machine.mach }}</p>
+          <p class="card-text"style="font-weight: bold; font-family: Arial, sans-serif;"><u>Date de création:</u> {{ machine.creation_date }}</p>
+          <p class="card-text"style="font-weight: bold; font-family: Arial, sans-serif;"><u>Date de maintenance prévue:</u> {{ machine.maintenance_date|date:'d/m/Y H:i' }}</p>
         </div>
         <div class="col-md-12 d-flex justify-content-end mt-3">
           <a href="{% url 'machine-detail' machine.id %}" class="btn btn-primary">Détail</a>
           <button type="button" class="btn btn-danger ms-2" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal{{ machine.id }}">
             Supprimer
+          </button>
+          <button type="button" class="btn btn-success ms-2">
+            Mise à jour
           </button>
         </div>
       </div>

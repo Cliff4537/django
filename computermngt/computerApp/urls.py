@@ -12,5 +12,8 @@ urlpatterns = [
     path('add-personnel', views.personnel_add_form, name = 'add-personnel'),
     path('infrastructures/',views.infrastructure_list_view, name='infrastructures'),
     path('add_infrastructure/', views.infrastructure_add_form, name='add-infra'),
-    path('machines/delete/<int:machine_id>/', views.delete_machine, name='delete_machine')
+    path('machines/delete/<int:machine_id>/', views.delete_machine, name='delete_machine'),
+    path('personnels/delete/<int:personnel_id>/', views.delete_personnel, name='delete_personnel'),
+    path('infrastructures/delete/<int:infrastructure_id>/',views.delete_infrastructure, name='delete_infrastructure'),
+    path('maj/',views.update_machine, name='maj' )
 ]

@@ -3,6 +3,23 @@ from django.core.validators import RegexValidator, validate_ipv4_address, MaxVal
 from django.core.exceptions import ValidationError
 from datetime import datetime,timedelta
 from django.db.models import Q
+from django.utils import timezone
+
+class MiseAJourMachine(models.Model):
+    machine = models.ForeignKey(
+        'Machine',
+        on_delete=models.CASCADE,
+        related_name='mises_a_jour'
+    )
+    administrateur = models.ForeignKey(
+        'Personnel',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='mises_a_jour',
+        limit_choices_to=Q(role='Administrateur')
+    )
+    date = models.DateTimeField(auto_now_add=True)
 
 class Machine(models.Model):
     TYPE = (
@@ -11,10 +28,20 @@ class Machine(models.Model):
         ('Serveur', 'Serveur'),
         ('Switch', 'Switch'),
     )
+   
+#     ETAT_CHOICES = (
+#     ('1', 'Vert'),
+#     ('2', 'Jaune'),
+#     ('3', 'Rouge'),
+#     ('4', 'Violet'),
+# )
+
 
     id = models.AutoField(primary_key=True, editable=False)
     nom = models.CharField(max_length=30)
-    creation_date = models.DateField(default=datetime.now())
+    # etat = models.IntegerField(choices=ETAT_CHOICES, default='1')
+    creation_date = models.DateTimeField(auto_now_add=True)
+    maintenance_date = models.DateTimeField(null=True, blank=True)
     mach = models.CharField(max_length=32, choices=TYPE, default='PC')
     address_ip = models.GenericIPAddressField(
         protocol='IPv4',
@@ -49,6 +76,57 @@ class Machine(models.Model):
     def get_name(self):
         return f"{self.id} {self.nom}"
     
+    def save(self, *args, **kwargs):
+        if not self.maintenance_date:
+            self.maintenance_date = self.calculate_maintenance_date()
+        self.update_etat()  # Appeler la méthode pour mettre à jour l'état
+        super().save(*args, **kwargs)
+
+
+    def calculate_maintenance_date(self):
+        if self.mach == 'PC':
+            maintenance_delta = timedelta(days=7)
+        elif self.mach == 'Mac':
+            maintenance_delta = timedelta(days=7)
+        elif self.mach == 'Serveur':
+            maintenance_delta = timedelta(days=14)
+        elif self.mach == 'Switch':
+            maintenance_delta = timedelta(days=28)
+        else:
+            maintenance_delta = timedelta(days=0)
+            
+
+        return self.creation_date + maintenance_delta
+
+# Tentative de changement de fond d'écran en fonction du nomdre de jours restant
+#     def update_etat(self):
+#      if self.maintenance_date is not None:
+#         remaining_days = (self.maintenance_date - timezone.localdate()).days
+#         if remaining_days > 3:
+#             self.etat = 1
+#         elif remaining_days >= 0:
+#             self.etat = 2
+#         elif remaining_days >= -1:
+#             self.etat = 3
+#         else:
+#             self.etat = 4
+#      else:
+#         self.etat = 4
+
+# def get_etat_class(self):
+#     if self.etat == 1:
+#         return 'bg-success'
+#     elif self.etat == 2:
+#         return 'bg-warning'
+#     elif self.etat == 3:
+#         return 'bg-danger'
+#     elif self.etat == 4:
+#         return 'bg-purple'
+#     else:
+#         return ''
+
+
+    
     
 
 
@@ -82,10 +160,10 @@ class Personnel(models.Model):
                                    related_name='personnel_attitre')
 
     def __str__(self):
-        return f"{self.id} - {self.genre}.{self.nom} {self.prenom}"
+        return f"{self.genre}.{self.nom} {self.prenom}"
 
     def get_name(self):
-        return f"{self.id} {self.nom}"
+        return f"{self.nom}"
 
 
 

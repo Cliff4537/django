@@ -1,10 +1,15 @@
 {% extends "index.html" %}
 
 {% block content %}
+<div class="container">
+  <h1>Infrastructure : {{ infrastructure.nom }}</h1>
+  <p>Site : {{ infrastructure.site }}</p>
 
-<h1>Nom: {{infrastructure.name}} </h1>
-<p> <strong>Id</strong> :{{infrastructure.id}} </a></p>
-
-
-
+  <h2>Machines :</h2>
+  <ul>
+    {% for machine in machines %}
+    <li>{{ machine.nom }}</li>
+    {% endfor %}
+  </ul>
+</div>
 {% endblock %}

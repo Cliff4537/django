@@ -1,34 +1,111 @@
 {% extends "index.html" %}
-{% load static %}
 
 {% block content %}
-	<div class="filter">
-    	<h1>Liste du Personnel</h1>
-    	<form method="GET" class="input-group mb-3">
-        	<input class="text" class="form-vontrol" placeholder="Nom du Personnel" aria-label="Search" aria-describedby="button-addon2" name="q">
-        	<button class="btn btn-outline-success" type="submit" id="button-addon2">Rechercher</button>
-    	</form>
-	</div>
-	<hr>
-	{% if personnels %}
-	<ul class="personnel-container">
-    	{% for personnel in personnels %}
-        	<li class="personnel">
-            	<a>{{ personnel.nom }} {{personnel.prenom}}</a>
-            	{% if personnel.sexe == "Homme" %}
-                	<img src="{% static 'computerApp/images/man.png' %}">
-            	{% elif personnel.sexe == "Femme" %}
-                	<img src="{% static 'computerApp/images/woman.png' %}">
-            	{% else %}
-                	<img src="{% static 'computerApp/images/unknown.png' %}">
-            	{% endif %}
-            	<a href="{% url 'personnel-detail' personnel.id %}" class="btn btn-primary">Details</a>
-        	</li>
-    	{% endfor %}
-	</ul>
-	{% else %}
-	<div class="alert alert-danger">
-    	Il n'y a pas de personnel qui correspond à votre filtre
-  	</div>
-	{% endif %}
+<div class="text-center mt-4 mb-3">
+  <h1 style="margin-bottom: 1rem; text-decoration: underline;">Liste du personnel</h1>
+</div>
+
+<!-- Barre de recherche et filtres -->
+<div class="row justify-content-start mb-3" style="background-color: #333333; padding: 10px;">
+  <div class="col-md-4">
+    <form method="GET" action="">
+      <div class="input-group">
+        <input type="text" class="form-control form-control-sm me-2" name="search_query" placeholder="Recherche" aria-label="Recherche" aria-describedby="search-button" value="{{ search_query }}" style="max-width: 200px;">
+        <button class="btn btn-primary btn-sm" type="submit" id="search-button">Rechercher</button>
+      </div>
+    </form>
+  </div>
+  <div class="col-md-8">
+    <form method="GET" action="">
+      <div class="row align-items-center justify-content-end">
+        <div class="col-md-auto">
+          <label class="input-group-text input-group-text-sm me-2 mb-0" for="filter-genre">Genre</label>
+        </div>
+        <div class="col-md-auto">
+          <select class="form-select form-select-sm me-2" name="filter_genre" id="filter-genre">
+				<option value="">Tous</option>
+				<option value="Mr">Homme</option>
+				<option value="Mme">Femme</option>
+			  </select>
+        </div>
+        <div class="col-md-auto">
+          <label class="input-group-text input-group-text-sm me-2 mb-0" for="filter-site">Site</label>
+        </div>
+        <div class="col-md-auto">
+            <select class="form-select form-select-sm me-2" name="filter_site" id="filter-site">
+				<option value="">Tous</option>
+				<option value="Tours">Tours</option>
+				<option value="Paris">Paris</option>
+			  </select>
+          </select>
+        </div>
+        <div class="col-md-auto">
+          <label class="input-group-text input-group-text-sm me-2 mb-0" for="filter-role">Role</label>
+        </div>
+        <div class="col-md-auto">
+          <select class="form-select form-select-sm me-2" name="filter_role" id="filter-role">
+				<option value="">Tous</option>
+				<option value="Utilisateur">Utilisateur</option>
+				<option value="Administrateur">Administrateur</option>
+			  </select>
+          </select>
+        </div>
+        <div class="col-md-auto">
+          <button class="btn btn-danger btn-sm me-2" type="submit">Filtrer</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="row">
+  {% for personnel in personnels %}
+  <div class="col-md-4">
+    <div class="card mb-3">
+      <div class="card-body row">
+        <div class="col-md-6">
+          <h5 class="card-title">{{ personnel.nom }}  {{ personnel.prenom }}</h5>
+        </div>
+        <div class="col-md-6">
+          <p class="card-text">Genre: {{ personnel.genre }}</p>
+          <p class="card-text">Site: {{ personnel.site }}</p>
+          <p class="card-text">Role: {{ personnel.role }}</p>
+        </div>
+        <div class="col-md-12 d-flex justify-content-end mt-3">
+          <a href="{% url 'personnel-detail' personnel.id %}" class="btn btn-primary">Détail</a>
+          <button type="button" class="btn btn-danger ms-2" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal{{ personnel.id }}">
+            Supprimer
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirm Delete Modal -->
+  <div class="modal fade" id="confirmDeleteModal{{ personnel.id }}" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel{{ personnel.id }}" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="confirmDeleteModalLabel{{ personnel.id }}">Supprimer le personnel "{{ personnel.nom }} {{ personnel.prenom }}"</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>Êtes-vous sûr de vouloir supprimer ce personnel ?</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+          <form method="POST" action="{% url 'delete_personnel' personnel.id %}" class="d-inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Supprimer</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <div class="col-md-12">
+    <p>Aucun personnel trouvé.</p>
+  </div>
+  {% endfor %}
+</div>
 {% endblock %}
