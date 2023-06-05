@@ -27,7 +27,7 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Home</a>
+                    <a class="nav-link" href="home.html">Home</a>
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
@@ -49,6 +49,9 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'infrastructures' %}">Infrastructure</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'network' %}">Calcul Réseaux</a>
+                </li>
             </ul>
         </div>
     </div>
@@ -59,12 +62,6 @@
 <div class="container mt-4">
     <h2>Contenu</h2>
     <p>Blabla de la première page</p>
-    {% for machine in machines %}
-    <p><b>{{ machine.id }}</b> {{ machine.nom }}</p>
-    {% endfor %}
-    {% for personnels in personnels %}
-    <p><b>{{ personnels.N_secu }}</b> {{ personnels.nom }}</p>
-    {% endfor %}
 </div>
 {% endblock %}
 

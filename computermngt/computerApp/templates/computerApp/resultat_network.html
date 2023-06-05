@@ -1,0 +1,19 @@
+{% extends "index.html" %}
+
+{% block content %}
+    <h3>Résultats :</h3>
+    {% if subnets %}
+        {% for subnet in subnets %}
+            <div>
+                <h4>Sous-réseau {{ forloop.counter }}</h4>
+                <p>Adresse réseau: {{ subnet.network_address }}</p>
+                <p>Masque de sous-réseau: {{ subnet.subnet_mask }}</p>
+                <p>Adresse IP de début: {{ subnet.ip_debut|join(".") }}</p>
+                <p>Adresse IP de fin: {{ subnet.ip_fin|join(".") }}</p>
+            </div>
+            <hr>
+        {% endfor %}
+    {% else %}
+        <p>Aucun résultat de sous-réseau disponible.</p>
+    {% endif %}
+{% endblock %}

@@ -1,15 +1,24 @@
 {% extends "index.html" %}
 
 {% block content %}
-<div class="container">
-  <h1>Infrastructure : {{ infrastructure.nom }}</h1>
-  <p>Site : {{ infrastructure.site }}</p>
 
-  <h2>Machines :</h2>
-  <ul>
-    {% for machine in machines %}
-    <li>{{ machine.nom }}</li>
-    {% endfor %}
-  </ul>
+<div class="card text-center mx-auto mt-5" style="max-width: 400px; border: 2px solid black; border-radius: 10px;">
+  <div class="card-body">
+    <h1 class="card-title">{{ infrastructure.nom }}</h1>
+    <hr class="nav-border">
+    <p class="card-text"><strong>Référant</strong> {{ infrastructure.administrateur }}</p>
+    <hr class="nav-border">
+    <p class="card-text"><strong>Site: </strong>{{ infrastructure.site }}</p>
+    <hr class="nav-border">
+    <ul>
+      {% for machine in machines %}
+      <li><strong>Type</strong> {{ machine.mach }} <strong>Nom:</strong> {{ machine.nom }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  <div class="card-footer text-end">
+    <a href="{% url 'infrastructures' %}" class="btn btn-danger">Quitter</a>
+  </div>
 </div>
+
 {% endblock %}

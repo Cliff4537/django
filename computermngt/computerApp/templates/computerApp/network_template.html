@@ -1,0 +1,23 @@
+{% extends "index.html" %}
+
+{% block content %}
+    <h3>Résultats :</h3>
+    {% if subnets %}
+        <form method="post" action="{% url 'calculate_subnet' %}">
+            {% csrf_token %}
+            {% for subnet in subnets %}
+                <div>
+                    <h4>Sous-réseau {{ forloop.counter }}</h4>
+                    <p>Adresse réseau: {{ subnet.network_address }}</p>
+                    <p>Masque de sous-réseau: {{ subnet.subnet_mask }}</p>
+                    <label for="num_hosts_{{ forloop.counter }}">Nombre d'hôtes:</label>
+                    <input type="number" name="num_hosts_{{ forloop.counter }}" id="num_hosts_{{ forloop.counter }}" required>
+                </div>
+                <hr>
+            {% endfor %}
+            <button type="submit">Calculer</button>
+        </form>
+    {% else %}
+        <p>Aucun résultat de sous-réseau disponible.</p>
+    {% endif %}
+{% endblock %}

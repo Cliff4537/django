@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
 from computerApp.models import Machine,Personnel,Infrastructure
 from django.shortcuts import get_object_or_404
-from .forms import AddMachineForm, AddPersonnelForm, AddInfrastructureForm
+from .forms import AddMachineForm, AddPersonnelForm, AddInfrastructureForm,NetworkForm
+from django.urls import reverse
 
 
 
@@ -219,3 +220,26 @@ def personnel_add_form(request):
     context = {'form': form}
     return render(request, 'computerApp/personnel_add.html', context)
 
+def network_view(request):
+    if request.method == 'POST':
+        form = NetworkForm(request.POST)
+        if form.is_valid():
+            subnets = form.calculate_subnet()
+            return redirect(reverse('results') + '?subnets=' + ','.join(subnets))  # Redirection vers la vue results_view avec les résultats
+    else:
+        form = NetworkForm()
+
+    context = {
+        'form': form,
+    }
+
+    return render(request, 'computerApp/network_template.html', context)
+
+def results_view(request):
+    subnets = request.GET.getlist('subnets')  # Récupérer les résultats des sous-réseaux depuis les paramètres de requête
+
+    context = {
+        'subnets': subnets
+    }
+
+    return render(request, 'computerApp/resultat_network.html', context)   

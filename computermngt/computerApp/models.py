@@ -79,7 +79,6 @@ class Machine(models.Model):
     def save(self, *args, **kwargs):
         if not self.maintenance_date:
             self.maintenance_date = self.calculate_maintenance_date()
-        self.update_etat()  # Appeler la méthode pour mettre à jour l'état
         super().save(*args, **kwargs)
 
 
