@@ -15,8 +15,8 @@ urlpatterns = [
     path('machines/delete/<int:machine_id>/', views.delete_machine, name='delete_machine'),
     path('personnels/delete/<int:personnel_id>/', views.delete_personnel, name='delete_personnel'),
     path('infrastructures/delete/<int:infrastructure_id>/',views.delete_infrastructure, name='delete_infrastructure'),
-    path('network/', views.network_view, name='network'),
-    path('results/', views.results_view, name='results'),
+    path('Meteo/',views.weather_view, name='meteo'),
+
     path('maj/',views.update_machine, name='maj' )
 
 ]

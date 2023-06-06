@@ -137,32 +137,5 @@ from django import forms
 
 
 
-class NetworkForm(forms.Form):
-    num_hosts = forms.IntegerField(label="Combien d'hôtes voulez-vous ?")
 
-    def calculate_subnet(self):
-        num_hosts = self.cleaned_data['num_hosts']
-        subnets = []
 
-        while num_hosts > 0:
-            if num_hosts > 65536:
-                network_address = '10.0.0.0'
-                subnet_mask = '255.255.255.0'
-            elif num_hosts > 256:
-                network_address = '172.16.0.0'
-                subnet_mask = '255.255.0.0'
-            else:
-                network_address = '192.168.0.0'
-                subnet_mask = '255.255.255.0'
-
-            subnet = {
-                'network_address': network_address,
-                'subnet_mask': subnet_mask,
-                'ip_debut': network_address.split('.')[:-1] + [str(int(network_address.split('.')[-1]) + 1)],
-                'ip_fin': network_address.split('.')[:-1] + [str(int(network_address.split('.')[-1]) + num_hosts - 2)]
-            }
-            subnets.append(subnet)
-
-            num_hosts -= 2 ** (32 - sum([bin(int(x)).count('1') for x in subnet_mask.split('.')])) - 2
-
-        return subnets

@@ -1,8 +1,11 @@
 from django.shortcuts import render, redirect
 from computerApp.models import Machine,Personnel,Infrastructure
 from django.shortcuts import get_object_or_404
-from .forms import AddMachineForm, AddPersonnelForm, AddInfrastructureForm,NetworkForm
-from django.urls import reverse
+from .forms import AddMachineForm, AddPersonnelForm, AddInfrastructureForm
+import urllib.request
+import json
+
+
 
 
 
@@ -220,26 +223,54 @@ def personnel_add_form(request):
     context = {'form': form}
     return render(request, 'computerApp/personnel_add.html', context)
 
-def network_view(request):
-    if request.method == 'POST':
-        form = NetworkForm(request.POST)
-        if form.is_valid():
-            subnets = form.calculate_subnet()
-            return redirect(reverse('results') + '?subnets=' + ','.join(subnets))  # Redirection vers la vue results_view avec les résultats
-    else:
-        form = NetworkForm()
 
-    context = {
-        'form': form,
-    }
 
-    return render(request, 'computerApp/network_template.html', context)
 
-def results_view(request):
-    subnets = request.GET.getlist('subnets')  # Récupérer les résultats des sous-réseaux depuis les paramètres de requête
+import json
+import urllib.request
+from django.shortcuts import render
 
-    context = {
-        'subnets': subnets
-    }
+def weather_view(request):
+    cities = ['Paris', 'Tours']
+    api_url = 'https://api.api-ninjas.com/v1/weather?city={}'
+    headers = {'X-Api-Key': 'vmXT4EVa9Venw5Kq7PXiRA==VJTSWcdc0SFRtOEg'}
+    weather_data = []
 
-    return render(request, 'computerApp/resultat_network.html', context)   
+    for city in cities:
+        req = urllib.request.Request(api_url.format(city), headers=headers)
+        try:
+            with urllib.request.urlopen(req) as response:
+                data = json.loads(response.read().decode())
+
+                temperature = data['temp']
+                wind_speed = data['wind_speed']
+                wind_degrees = data['wind_degrees']
+                humidity = data['humidity']
+                sunset = data['sunset']
+                min_temp = data['min_temp']
+                cloud_pct = data['cloud_pct']
+                feels_like = data['feels_like']
+                sunrise = data['sunrise']
+                max_temp = data['max_temp']
+
+                city_weather = {
+                    'city': city,
+                    'temperature': int(temperature),
+                    'wind_speed': float(wind_speed),
+                    'wind_degrees': int(wind_degrees),
+                    'humidity': int(humidity),
+                    'sunset': int(sunset),
+                    'min_temp': int(min_temp),
+                    'cloud_pct': int(cloud_pct),
+                    'feels_like': int(feels_like),
+                    'sunrise': int(sunrise),
+                    'max_temp': int(max_temp)
+                }
+                weather_data.append(city_weather)
+
+        except urllib.error.HTTPError as e:
+            error_message = "Error: {} - {}".format(e.code, e.reason)
+            return render(request, 'computerApp/weather.html', {'error_message': error_message})
+
+    context = {'weather_data': weather_data}
+    return render(request, 'computerApp/weather.html', context)
