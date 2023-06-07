@@ -1,9 +1,9 @@
 from django.db import models
 from django.core.validators import RegexValidator, validate_ipv4_address, MaxValueValidator
 from django.core.exceptions import ValidationError
-from datetime import datetime,timedelta
+from datetime import timedelta
 from django.db.models import Q
-from django.utils import timezone
+from django.contrib.auth.models import User
 
 class MiseAJourMachine(models.Model):
     machine = models.ForeignKey(
@@ -96,6 +96,14 @@ class Machine(models.Model):
             
 
         return self.creation_date + maintenance_delta
+
+class MachineUpdate(models.Model):
+    machine = models.ForeignKey('Machine', on_delete=models.CASCADE)
+    admin = models.ForeignKey(User, on_delete=models.CASCADE)
+    update_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Machine: {self.machine.nom} | Admin: {self.admin.username} | Update Date: {self.update_date}"
 
 # Tentative de changement de fond d'écran en fonction du nomdre de jours restant
 #     def update_etat(self):

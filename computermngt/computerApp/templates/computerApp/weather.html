@@ -1,29 +1,31 @@
 {% extends "index.html" %}
 
 {% block content %}
+<div class="text-center bg-light p-3">
     <h1>Météo</h1>
+  </div>
+  
     {% if error_message %}
         <p>{{ error_message }}</p>
     {% else %}
         <div class="row">
-        {% for weather in weather_data %}
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-body">
+            <div class="row">
+                {% for weather in weather_data %}
+                  <div class="col-md-6">
+                    <div class="card mb-3" style="background-color: #333333; color: #ffffff;">
+                      <div class="card-body">
                         <h2>{{ weather.city }}</h2>
                         <p>Température : {{ weather.temperature }}°C</p>
                         <p>Vitesse du vent : {{ weather.wind_speed }}</p>
                         <p>Degrés du vent : {{ weather.wind_degrees }}</p>
                         <p>Humidité : {{ weather.humidity }}</p>
-                        <p>Coucher de soleil : {{ weather.sunset }}</p>
                         <p>Température minimale : {{ weather.min_temp }}°C</p>
                         <p>Pourcentage de nuages : {{ weather.cloud_pct }}</p>
                         <p>Sensation thermique : {{ weather.feels_like }}</p>
-                        <p>Lever du soleil : {{ weather.sunrise }}</p>
                         <p>Température maximale : {{ weather.max_temp }}°C</p>
+                      </div>
                     </div>
-                </div>
-            </div>
+                  </div>
         {% endfor %}
         </div>
     {% endif %}

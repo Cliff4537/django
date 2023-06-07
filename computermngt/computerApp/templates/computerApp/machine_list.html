@@ -1,9 +1,7 @@
 {% extends "index.html" %}
 
 {% block content %}
-<div class="text-center mt-4 mb-3">
-  <h1 style="margin-bottom: 1rem; text-decoration: underline;">Liste des machines</h1>
-</div>
+
 
 <!-- Barre de recherche et filtres -->
 <div class="row justify-content-start mb-3" style="background-color: #333333; padding: 10px;">
@@ -77,9 +75,7 @@
           <button type="button" class="btn btn-danger ms-2" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal{{ machine.id }}">
             Supprimer
           </button>
-          <button type="button" class="btn btn-success ms-2">
-            Mise à jour
-          </button>
+          <a href="{% url 'update_machine' machine.id %}" class="btn btn-success ms-2">Mise à jour</a>
         </div>
       </div>
     </div>

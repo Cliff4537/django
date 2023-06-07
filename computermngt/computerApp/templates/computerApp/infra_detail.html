@@ -6,14 +6,20 @@
   <div class="card-body">
     <h1 class="card-title">{{ infrastructure.nom }}</h1>
     <hr class="nav-border">
-    <p class="card-text"><strong>Référant</strong> {{ infrastructure.administrateur }}</p>
+    <p class="card-text"><strong>Responsable d'infrastructure: </strong> {{ infrastructure.administrateur }}</p>
     <hr class="nav-border">
     <p class="card-text"><strong>Site: </strong>{{ infrastructure.site }}</p>
     <hr class="nav-border">
     <ul>
       {% for machine in machines %}
-      <li><strong>Type</strong> {{ machine.mach }} <strong>Nom:</strong> {{ machine.nom }}</li>
-      {% endfor %}
+  <div>
+    <strong>Type:</strong> {{ machine.mach }}
+    <strong>Nom:</strong> {{ machine.nom }}
+  </div>
+  {% if not loop.last %}
+    <hr>
+  {% endif %}
+{% endfor %}
     </ul>
   </div>
   <div class="card-footer text-end">

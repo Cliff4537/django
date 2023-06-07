@@ -1,16 +1,17 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <title>Entreprise XYZ - Site Vitrine</title>
+    <title>Entreprise R&T dev - Site Vitrine</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
           rel="stylesheet"
           integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
           crossorigin="anonymous">
     <style>
         body {
-            background-image: url("/static/computerApp/images/fond.PNG");
+            background-image: url("/static/computerApp/images/fond.jpg");
             background-color: #f1f1f1;
             background-size: cover;
             background-position: center;
@@ -29,11 +30,6 @@
             margin-right: 10px;
         }
 
-        .footer {
-            background-color: #f8f8f8;
-            padding: 20px 0;
-            text-align: center;
-        }
 
         .footer a {
             color: #000;
@@ -43,10 +39,11 @@
         .content {
             margin: 100px auto;
             width: 80%;
-            background-color: #fff;
+            background-color: rgba(192, 192, 192, 0.8);
             padding: 20px;
             border-radius: 10px;
             text-align: justify;
+            font-family: 'Poppins', sans-serif;
         }
 
         .feature-box {
@@ -68,57 +65,49 @@
     <div class="container">
         <a class="navbar-brand" href="#">
             <img src="/static/computerApp/images/logo.PNG" alt="Logo">
-            Entreprise XYZ
         </a>
-        <button class="btn btn-primary">Login</button>
+        <a href="{% url 'login' %}" class="btn btn-primary ms-auto">Login</a>
     </div>
 </nav>
 
 <div class="content">
+
     <h2>À propos de notre entreprise</h2>
     <p>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris a ullamcorper dui. Integer gravida
-        tincidunt risus, ac malesuada erat aliquet at. Vivamus laoreet eros nec neque fermentum, eu fermentum
-        nunc pellentesque. Duis consequat ligula lorem, non eleifend nisl efficitur eu. Vestibulum ante ipsum
-        primis in faucibus orci luctus et ultrices posuere cubilia Curae; Sed nec sagittis nulla, eu feugiat
-        risus. Sed lobortis, justo et volutpat finibus, libero ex rhoncus ex, a semper felis neque eu ipsum.
-        Donec finibus iaculis interdum. Aenean nec eros semper, eleifend metus a, dignissim justo.
+        Fondée en 1998, R&T Dev est une entreprise pionnière dans le domaine de l'aérospatiale. 
+        Notre histoire a commencé avec une équipe de passionnés de l'exploration spatiale qui rêvaient de repousser les limites de l'univers.
+        Guidés par notre vision audacieuse, nous avons entrepris de développer des solutions innovantes pour conquérir l'espace.
     </p>
     <p>
-        Sed tincidunt, lectus eget tempor fermentum, ligula metus finibus justo, at eleifend dolor mauris nec
-        leo. Proin venenatis turpis eget dui hendrerit, vel venenatis metus suscipit. Nam dignissim enim sit
-        amet nibh aliquet feugiat. Nulla volutpat sapien ut urna volutpat, ac dapibus velit fermentum. Sed
-        fermentum metus ut felis tincidunt, vitae feugiat dolor pretium. Aenean pulvinar, neque sit amet
-        convallis bibendum, purus quam rhoncus risus, non fringilla sapien eros ac lectus. Ut mollis, justo in
-        laoreet semper, dolor tortor cursus nisi, ut facilisis ex est at nisl. Ut non bibendum ex. Integer
-        varius rhoncus neque, et scelerisque est hendrerit et. Aliquam vel congue ligula.
+        Au fil des années, nous avons consacré nos efforts à la conception et au lancement de satellites de pointe.
+        Ces réalisations ont permis de stimuler la recherche scientifique, de cartographier l'espace et de contribuer à la compréhension de notre univers.
+        Nos satellites ont fourni des données cruciales pour l'étude des changements climatiques, la surveillance des ressources naturelles et la communication mondiale.
     </p>
     <p>
-        Quisque eu arcu lobortis, tempus nibh sed, congue sem. Vivamus cursus ex quis urna consectetur, vitae
-        bibendum tellus molestie. Suspendisse potenti. Sed vulputate odio a urna dapibus bibendum. Nam
-        ullamcorper, urna in viverra vulputate, enim orci rutrum metus, vel efficitur purus lorem a mi. Sed
-        gravida quam sed erat posuere, non aliquam diam aliquam. Nulla pellentesque, ipsum non faucibus
-        interdum, turpis felis fringilla ipsum, non facilisis lectus ex a risus. Integer tincidunt odio vitae
-        turpis sollicitudin, id consectetur ex ultrices.
+        R&T Dev s'est engagé à repousser les frontières de l'exploration spatiale en développant des technologies de pointe.
+        Nous avons conçu des vaisseaux spatiaux révolutionnaires, dotés de systèmes de propulsion avancés et de systèmes de support de vie autonomes.
+        Ces avancées technologiques ont ouvert de nouvelles perspectives pour l'exploration humaine, nous rapprochant un peu plus de notre objectif ultime : 
+        atteindre des planètes lointaines et découvrir de nouveaux mondes habitables.
     </p>
+</div>
 </div>
 
 <div class="container">
     <div class="row">
         <div class="col-md-4">
-            <div class="feature-box" style="background-color: orange;">
+            <div class="feature-box" style="background-color: orange; opacity: 0.8;">
                 <h3>Une équipe dynamique</h3>
                 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="feature-box" style="background-color: #87CEFA;">
+            <div class="feature-box" style="background-color: #87CEFA; opacity: 0.8;">
                 <h3>Pilier de l'innovation</h3>
                 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="feature-box" style="background-color: #fff;">
+            <div class="feature-box" style="background-color: #fff; opacity: 0.8;">
                 <h3>Prêt à conquérir l'espace ?</h3>
                 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
             </div>
@@ -126,21 +115,8 @@
     </div>
 </div>
 
-<footer class="footer">
-    <div class="container">
-        <div class="row">
-            <div class="col">
-                <a href="#">Twitter</a>
-            </div>
-            <div class="col">
-                <a href="#">Instagram</a>
-            </div>
-            <div class="col">
-                <a href="#">LinkedIn</a>
-            </div>
-        </div>
-    </div>
-</footer>
+
+
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"

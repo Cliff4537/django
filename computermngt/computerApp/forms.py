@@ -77,16 +77,26 @@ class AddInfrastructureForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         site = self.initial.get('site') or self.data.get('site')
         if site:
-            self.fields['machines'].queryset = Machine.objects.filter(site=site)
+            self.fields['machines'].queryset = Machine.objects.filter(
+                site=site,
+                infrastructure__isnull=True  # Exclure les machines déjà présentes dans une autre infrastructure
+            )
 
+    def clean(self):
+        cleaned_data = super().clean()
+        administrateur = cleaned_data.get('administrateur')
+        site = cleaned_data.get('site')
 
+        if administrateur and site:
+            infrastructures_count = Infrastructure.objects.filter(
+                administrateur=administrateur,
+                site=site
+            ).exclude(pk=self.instance.pk).count()
 
+            if infrastructures_count > 0:
+                self.add_error('administrateur', "Cet administrateur appartient déjà à une autre infrastructure.")
 
-
-   
-
-
-
+        return cleaned_data
 
 class AddPersonnelForm(forms.Form):
     nom = forms.CharField(required=True, label='Nom du personnel')
@@ -130,8 +140,17 @@ class AddPersonnelForm(forms.Form):
         if existing_personnel:
             raise ValidationError('Cette adresse e-mail existe déjà.')
         return email
+    
+    def clean_machine(self):
+        machine = self.cleaned_data.get("machine")
+        if machine is None:
+            return None  # Retourne None si le champ est vide
+        personnel_with_machine = Personnel.objects.filter(machine=machine).exists()
+        if personnel_with_machine:
+            raise ValidationError('Cette machine est déjà attribuée.')
+        return machine
 
-from django import forms
+
 
 
 

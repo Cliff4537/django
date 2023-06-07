@@ -1,9 +1,7 @@
 {% extends "index.html" %}
 
 {% block content %}
-<div class="text-center mt-4 mb-3">
-  <h1 style="margin-bottom: 1rem; text-decoration: underline;">Liste des infrastructures</h1>
-</div>
+
 
 <!-- Barre de recherche et filtres -->
 <div class="row justify-content-start mb-3" style="background-color: #333333; padding: 10px;">
@@ -59,13 +57,15 @@
 <div class="row">
   {% for infrastructure in infrastructures %}
   <div class="col-md-4">
-    <div class="card mb-3">
+    <div class="card mb-3" style="background-color: #333333; color: #ffffff; width: 90%; border: 1px solid #333333;">
       <div class="card-body row">
         <div class="col-md-6">
-          <h5 class="card-title">{{ infrastructure.nom }}</h5>
-          <p class="card-text">Site: {{ infrastructure.site }}</p>
-          <p class="card-text">Administrateur: {{ infrastructure.administrateur }}</p>
-          <p class="card-text">Nombre d'éléments: {{ infrastructure.machines.count }}</p>  <!-- Add this line -->
+          <h5 class="card-title" style="font-weight: bold; font-family: Arial, sans-serif;">{{ infrastructure.nom }}</h5>
+        </div>
+        <div class="col-md-6">
+          <p class="card-text" style="font-weight: bold; font-family: Arial, sans-serif;"><u>Site:</u> {{ infrastructure.site }}</p>
+          <p class="card-text" style="font-weight: bold; font-family: Arial, sans-serif;"><u>Administrateur:</u> {{ infrastructure.administrateur }}</p>
+          <p class="card-text" style="font-weight: bold; font-family: Arial, sans-serif;"><u>Nombre d'éléments:</u> {{ infrastructure.machines.count }}</p>
         </div>
         <div class="col-md-12 d-flex justify-content-end mt-3">
           <a href="{% url 'infrastructure-detail' infrastructure.id %}" class="btn btn-primary">Détail</a>
@@ -76,6 +76,7 @@
       </div>
     </div>
   </div>
+  
 
   <!-- Confirm Delete Modal -->
   <div class="modal fade" id="confirmDeleteModal{{ infrastructure.id }}" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel{{ infrastructure.id }}" aria-hidden="true">

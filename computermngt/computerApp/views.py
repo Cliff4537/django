@@ -1,10 +1,14 @@
 from django.shortcuts import render, redirect
-from computerApp.models import Machine,Personnel,Infrastructure
+from computerApp.models import Machine,Personnel,Infrastructure,MachineUpdate
 from django.shortcuts import get_object_or_404
 from .forms import AddMachineForm, AddPersonnelForm, AddInfrastructureForm
 import urllib.request
 import json
-
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+# from django.urls import reverse
+from datetime import timedelta
+from django.utils import timezone
 
 
 
@@ -20,7 +24,7 @@ def index(request) :
 
     }
     return render(request, 'index.html',context)
-
+@login_required
 def machine_list_view(request):
     search_query = request.GET.get('search_query')
     filter_type = request.GET.get('filter_type')
@@ -55,7 +59,7 @@ def machine_list_view(request):
     return render(request, 'computerApp/machine_list.html', context)
 
   
-
+@login_required
 def update_machine(request, machine_id):
     machine = get_object_or_404(Machine, id=machine_id)
 
@@ -64,7 +68,7 @@ def update_machine(request, machine_id):
         return redirect('machine-list')
     return render(request, 'update_machine.html', {'machine': machine})
 
-
+@login_required
 def personnel_list_view(request):
     personnels = Personnel.objects.all()
 
@@ -91,13 +95,45 @@ def personnel_list_view(request):
     context = {'personnels': personnels, 'search_query': search_query, 'filter_genre': filter_genre, 'filter_site': filter_site, 'filter_role': filter_role}
     return render(request, 'computerApp/personnel_list.html', context)
 
+@login_required   
+def update_machine(request, pk):
+    machine = get_object_or_404(Machine, pk=pk)
+    
+    # Récupérer le type de machine
+    machine_type = machine.mach
+    
+    # Définir le delta de maintenance en fonction du type de machine
+    if machine_type == 'PC':
+        maintenance_delta = timedelta(days=7)
+    elif machine_type == 'Mac':
+        maintenance_delta = timedelta(days=7)
+    elif machine_type == 'Serveur':
+        maintenance_delta = timedelta(days=14)
+    elif machine_type == 'Switch':
+        maintenance_delta = timedelta(days=28)
+    else:
+        maintenance_delta = timedelta(days=0)
+    
+    # Calculer la nouvelle date de maintenance
+    current_date = timezone.now()
+    new_maintenance_date = current_date + maintenance_delta
+    
+    # Mettre à jour la date de maintenance seulement si elle a changé
+    if machine.maintenance_date != new_maintenance_date:
+        machine.maintenance_date = new_maintenance_date
+        machine.save(update_fields=['maintenance_date'])
 
-
+    MachineUpdate.objects.create(machine=machine, admin=request.user)
+    
+    # Rediriger vers la page "machines" avec les machines mises à jour
+    return redirect('machines')
+@login_required
 def machine_detail_view(request, pk ):
   machine = get_object_or_404( Machine , id = pk)
   context = { 'machine': machine}
   return render(request, 'computerApp/machine_detail.html', context)
-  
+
+@login_required 
 def delete_machine(request, machine_id):
     machine = get_object_or_404(Machine, id=machine_id)
 
@@ -106,7 +142,7 @@ def delete_machine(request, machine_id):
         return redirect('machines')
 
     return render(request, 'computerApp/delete_machine.html', {'machine': machine})
-
+@login_required
 def delete_personnel(request, personnel_id):
     personnel = get_object_or_404(Personnel, id=personnel_id)
 
@@ -116,6 +152,7 @@ def delete_personnel(request, personnel_id):
 
     return render(request, 'computerApp/delete_personnel.html', context = {'personnel': personnel})
 
+@login_required
 def delete_infrastructure(request, infrastructure_id):
     infrastructure = get_object_or_404(Infrastructure, id=infrastructure_id)
 
@@ -126,21 +163,23 @@ def delete_infrastructure(request, infrastructure_id):
     return render(request, 'computerApp/delete_infrastructure.html', context = {'infrastructure': infrastructure})    
     
 
-
+@login_required
 def personnel_detail_view(request, pk ):
   personnel = get_object_or_404( Personnel , id = pk)
   context = { 'personnel': personnel}
   return render(request, 'computerApp/personnel_detail.html', context)
 
+@login_required
 def infrastructure_detail_view(request, pk):
     infrastructure = get_object_or_404(Infrastructure, id = pk)
-    machines = infrastructure.machines.all()  # Récupérer toutes les machines liées à l'infrastructure
+    machines = infrastructure.machines.all()  
     context = {
         'infrastructure': infrastructure,
         'machines': machines,
     }
     return render(request, 'computerApp/infra_detail.html', context)
 
+@login_required
 def machine_add_form(request):
     if request.method == 'POST':
         form = AddMachineForm(request.POST or None)
@@ -162,7 +201,7 @@ def machine_add_form(request):
     return render(request, 'computerApp/machine_add.html', context)
 
 
-
+@login_required
 def infrastructure_add_form(request):
     if request.method == 'POST':
         form = AddInfrastructureForm(request.POST)
@@ -193,13 +232,13 @@ def infrastructure_add_form(request):
 
 
 
-
+@login_required
 def infrastructure_list_view(request):
     infrastructures = Infrastructure.objects.all()
     context = {'infrastructures': infrastructures}
     return render(request, 'computerApp/infra_list.html', context)
 
-
+@login_required
 def personnel_add_form(request):
     if request.method == 'POST':
         form = AddPersonnelForm(request.POST)
@@ -226,10 +265,8 @@ def personnel_add_form(request):
 
 
 
-import json
-import urllib.request
-from django.shortcuts import render
 
+@login_required
 def weather_view(request):
     cities = ['Paris', 'Tours']
     api_url = 'https://api.api-ninjas.com/v1/weather?city={}'
@@ -274,3 +311,34 @@ def weather_view(request):
 
     context = {'weather_data': weather_data}
     return render(request, 'computerApp/weather.html', context)
+
+
+def login_view(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            login(request, user)
+            return redirect('index')  # Redirige vers la page d'accueil après la connexion
+        else:
+            error_message = 'Identifiant ou mot de passe incorrect'
+            return render(request, 'computerApp/login.html', {'error_message': error_message})
+    else:
+        return render(request, 'computerApp/login.html')
+
+@login_required
+def logout_view(request):
+    logout(request)
+    return redirect('home')
+@login_required       
+def dashboard_view(request):
+    # Récupérer les dernières mises à jour des machines
+    machine_updates = MachineUpdate.objects.all().order_by('-update_date')
+    
+    return render(request, 'computerApp/dashboard.html', {'machine_updates': machine_updates})
+
+def home_view(request):
+    return render(request, 'home.html')
+

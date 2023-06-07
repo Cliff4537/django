@@ -48,7 +48,9 @@
                   <label for="{{ form.machines.id_for_label }}">Machines :</label>
                   <select name="{{ form.machines.name }}" id="{{ form.machines.id_for_label }}" multiple class="form-select">
                     {% for machine in form.machines.field.queryset %}
-                      <option value="{{ machine.pk }}">{{ machine }}</option>
+                      {% if not machine.infrastructure %}
+                        <option value="{{ machine.pk }}">{{ machine }}</option>
+                      {% endif %}
                     {% endfor %}
                   </select>
                 </div>

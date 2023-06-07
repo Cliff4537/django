@@ -1,1 +1,23 @@
-{% extends "index.html"%}
+{% extends 'index.html' %}
+
+{% block content %}
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-9">
+      <div class="card text-center mx-auto mt-5" style="max-width: 800px; border: 2px solid black; border-radius: 10px; background-color: #f2f2f2;">
+        <div class="card-body">
+          {% for update in machine_updates %}
+            <p class="card-text"><strong><u>Mise à jour</u> | <u>Site</u></strong>: {{ update.machine.site }} | <strong><u>Type</u></strong>: {{ update.machine.mach }} | <strong><u>Machine</u></strong>: {{ update.machine.nom }} | <strong><u>Admin</u></strong>: {{ update.admin.username }} | <strong><u>Date</u></strong>: {{ update.update_date }}</p>
+            {% if not loop.last %}
+              <hr class="nav-border">
+            {% endif %}
+          {% endfor %}
+        </div>
+        <div class="card-footer text-end">
+          <a href="{% url 'machines' %}" class="btn btn-danger">Quitter</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
