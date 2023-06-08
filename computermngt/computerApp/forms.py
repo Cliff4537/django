@@ -73,14 +73,7 @@ class AddInfrastructureForm(forms.ModelForm):
         model = Infrastructure
         fields = ['nom', 'site', 'administrateur']
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        site = self.initial.get('site') or self.data.get('site')
-        if site:
-            self.fields['machines'].queryset = Machine.objects.filter(
-                site=site,
-                infrastructure__isnull=True  # Exclure les machines déjà présentes dans une autre infrastructure
-            )
+    
 
     def clean(self):
         cleaned_data = super().clean()
